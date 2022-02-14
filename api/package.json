@@ -1,0 +1,39 @@
+{
+  "name": "handsignme-api",
+  "version": "0.0.1",
+  "description": "Node.js REST API for HanSignMe",
+  "main": "src/index.js",
+  "private": true,
+  "scripts": {
+    "start": "node src",
+    "lint": "npx eslint ./",
+    "lint-fix": "npx eslint --fix ./",
+    "test": "npx jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bordeaux-INP/HandSignMe.git"
+  },
+  "keywords": [
+    "github",
+    "actions",
+    "nodejs"
+  ],
+  "license": "GPL3",
+  "bugs": {
+    "url": "https://github.com/Bordeaux-INP/HandSignMe/issues"
+  },
+  "homepage": "https://github.com/Bordeaux-INP/HandSignMe#readme",
+  "devDependencies": {
+    "eslint": "^8.8.0",
+    "eslint-plugin-jest": "^26.1.0",
+    "jest": "^27.5.1",
+    "sequelize-cli": "^6.4.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.1",
+    "express": "^4.17.2",
+    "sequelize": "^6.16.1",
+    "sqlite3": "^5.0.2"
+  }
+}
