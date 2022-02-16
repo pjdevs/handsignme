@@ -59,9 +59,11 @@ $ cd ../app
 $ npm install
 ```
 
-2. Run Mail Hog
-
-TODO later...
+2. Run MailHog with docker
+```
+$ docker pull mailhog/mailhog
+$ docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+```
 
 3. The database is fully managed by `sequelize.js`. Run the following to migrate and populate the database :
 
