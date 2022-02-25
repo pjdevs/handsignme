@@ -1,14 +1,12 @@
-const items = require('../../src/db/items')
+const users = require('../../src/services/users')
 
-test('there must be items in the db', () => {
-    const list = items.getItems()
+test('there must be users', () => {
+    const list = users.getUsers()
     
     expect(list).not.toBeNull()
     expect(list).toBeDefined()
 })
 
 test('there must be exactly 2 items in the db', () => {
-    const list = items.getItems()
-    
-    expect(list.length).toBe(2)
+    expect(users.getUsers().length).toBe(2)
 })

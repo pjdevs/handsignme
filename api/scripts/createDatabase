@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+const db =  require(__dirname + '/../src/db')
+
+db.sequelize.sync({force: true})
+    .then(() => console.log('Done !'))
+    .catch(err => console.log(err))
