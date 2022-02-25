@@ -9,7 +9,7 @@
       <span>{{index}} / {{doc.numPages}}</span>
     </div>
     <div class="pdf-page-wrapper section">
-      <canvas v-bind:class="{ invisible: loading }" id="pdf-page"></canvas>
+      <canvas v-bind:class="{ invisible: loading }" ref="pdfPage"></canvas>
     </div>
     <p v-if="loading">Loading...</p>
   </div>
@@ -30,25 +30,13 @@ export default {
       currentScale: Number(this.scale),
       loading: false,
       doc: { numPages: 0 },
-      signature: {
-        x: 0.65,
-        y: 0.85,
-        width: 0.3,
-        height: 0.1,
-        color: 'black',
-        rectColor: ['red', 'orange', 'purple'][Math.floor(Math.random() * 3)]
-      },
-      signatureRect: { x: 0, y: 0, width: 0, height: 0 }
+      cleanHandlers: []
     }
   },
   props: {
-    url: {
+    src: {
       type: String,
-      default: ''
-    },
-    workerUrl: {
-      type: String,
-      default: 'pdf.worker.min.js'
+      required: true
     },
     page: {
       type: Number,
@@ -57,6 +45,26 @@ export default {
     scale: {
       type: Number,
       default: 1
+    },
+    config: {
+      type: Array,
+      default: () => {
+        return [
+          {
+            signature: {
+              rect: {
+                x: 0.65,
+                y: 0.85,
+                width: 0.3,
+                height: 0.1,
+                color: ['red', 'orange', 'purple'][Math.floor(Math.random() * 3)]
+              },
+              color: 'black'
+            },
+            pages: [1]
+          }
+        ]
+      }
     }
   },
   watch: {
@@ -68,6 +76,23 @@ export default {
     }
   },
   methods: {
+    renderConfig (context, docWidth, docHeight) {
+      for (const configObject of this.config) {
+        if (configObject.pages.includes(this.index) && configObject.signature) {
+          context.strokeStyle = configObject.signature.rect.color
+          context.lineWidth = 5 * this.currentScale
+          context.rect(
+            configObject.signature.rect.x * docWidth,
+            configObject.signature.rect.y * docHeight,
+            configObject.signature.rect.width * docWidth,
+            configObject.signature.rect.height * docHeight
+          )
+          context.stroke()
+
+          this.registerSignatureHandler(configObject, docWidth, docHeight)
+        }
+      }
+    },
     async render () {
       const vm = this
 
@@ -78,7 +103,8 @@ export default {
       // Support HiDPI-screens.
       const outputScale = window.devicePixelRatio || 1
 
-      const canvas = document.getElementById('pdf-page')
+      this.cleanHandlers.forEach(handler => handler())
+      const canvas = this.$refs.pdfPage
       const context = canvas.getContext('2d')
 
       const docWidth = Math.floor(viewport.width * outputScale)
@@ -100,16 +126,7 @@ export default {
       }
 
       await page.render(renderContext).promise
-
-      this.signatureRect.x = this.signature.x * docWidth
-      this.signatureRect.y = this.signature.y * docHeight
-      this.signatureRect.width = this.signature.width * docWidth
-      this.signatureRect.height = this.signature.height * docHeight
-
-      context.strokeStyle = this.signature.rectColor
-      context.lineWidth = 5 * this.currentScale
-      context.rect(this.signatureRect.x, this.signatureRect.y, this.signatureRect.width, this.signatureRect.height)
-      context.stroke()
+      this.renderConfig(context, docWidth, docHeight)
     },
     previous () {
       if (this.index > 1) { this.index-- }
@@ -127,10 +144,10 @@ export default {
         this.currentScale -= 0.1
       }
     },
-    registerSignatureHandler () {
+    registerSignatureHandler (configObject, docWidth, docHeight) {
       // Setup canvas
       const vm = this
-      const canvas = document.getElementById('pdf-page')
+      const canvas = this.$refs.pdfPage
       const ctx = canvas.getContext('2d')
 
       // Globals vars for PC clicks handle
@@ -139,14 +156,16 @@ export default {
       let isDrawing = false
 
       // Helper functions
-      function setDrawStyle () {
-        ctx.strokeStyle = vm.signature.color
-        ctx.lineWidth = 3 * vm.currentScale
+      function insideSignatureRect (position) {
+        return configObject.signature.rect.x * docWidth <= position.x &&
+          position.x <= configObject.signature.rect.x * docWidth + configObject.signature.rect.width * docWidth &&
+          configObject.signature.rect.y * docHeight <= position.y &&
+          position.y <= configObject.signature.rect.y * docHeight + configObject.signature.rect.height * docHeight
       }
 
-      function insideSignatureRect (position) {
-        return vm.signatureRect.x <= position.x && position.x <= vm.signatureRect.x + vm.signatureRect.width &&
-                          vm.signatureRect.y <= position.y && position.y <= vm.signatureRect.y + vm.signatureRect.height
+      function setDrawStyle (config) {
+        ctx.strokeStyle = configObject.signature.color
+        ctx.lineWidth = 3 * vm.currentScale
       }
 
       // PC functions
@@ -154,7 +173,9 @@ export default {
         lastPosition.x = e.offsetX
         lastPosition.y = e.offsetY
 
-        if (!insideSignatureRect(lastPosition)) { return }
+        if (!insideSignatureRect(lastPosition)) {
+          return
+        }
 
         isDrawing = true
 
@@ -173,16 +194,16 @@ export default {
             ctx.moveTo(lastPosition.x, lastPosition.y)
             ctx.lineTo(position.x, position.y)
             ctx.closePath()
-            setDrawStyle()
+            setDrawStyle(position)
             ctx.stroke()
-          }
 
-          lastPosition.x = position.x
-          lastPosition.y = position.y
+            lastPosition.x = position.x
+            lastPosition.y = position.y
+          }
         }
 
-        canvas.onmouseup = handleEndDrawing
-        canvas.onmousemove = handleDrawing
+        canvas.addEventListener('mouseup', handleEndDrawing)
+        canvas.addEventListener('mousemove', handleDrawing)
       }
 
       // Mobile functions
@@ -219,45 +240,49 @@ export default {
             ctx.moveTo(lastPosition.x, lastPosition.y)
             ctx.lineTo(position.x, position.y)
             ctx.closePath()
-            setDrawStyle()
+            setDrawStyle(position)
             ctx.stroke()
-          }
 
-          lastPosition.x = position.x
-          lastPosition.y = position.y
+            lastPosition.x = position.x
+            lastPosition.y = position.y
+          }
         }
 
-        canvas.ontouchend = handleEndDrawingMobile
-        canvas.ontouchmove = handleDrawingMobile
+        canvas.addEventListener('touchend', handleEndDrawingMobile)
+        canvas.addEventListener('touchmove', handleDrawingMobile)
 
         return false
       }
 
       // Setup handlers
-      canvas.onmousedown = handleStartDrawing
-      canvas.ontouchstart = handleStartDrawingMobile
+      canvas.addEventListener('mousedown', handleStartDrawing)
+      canvas.addEventListener('touchstart', handleStartDrawingMobile)
+
+      this.cleanHandlers.push(() => {
+        canvas.removeEventListener('mousedown', handleStartDrawing)
+        canvas.removeEventListener('touchstart', handleStartDrawingMobile)
+      })
     }
   },
   mounted () {
     const vm = this
-    pdfjs.GlobalWorkerOptions.workerSrc = this.workerUrl
     this.loading = true
 
-    pdfjs.getDocument(this.url).promise
+    pdfjs.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js'
+    pdfjs.getDocument(this.src).promise
       .then(doc => {
         vm.doc = doc
         return vm.render()
       })
       .then(() => {
         vm.loading = false
-        vm.registerSignatureHandler()
       })
       .catch(alert)
   }
 }
 </script>
 
-<style>
+<style scoped>
     canvas {
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     }

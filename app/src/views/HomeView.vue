@@ -1,7 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <PDFViewer url="sample.pdf"/>
+    <PDFViewer src="sample.pdf"/>
   </div>
 </template>
 
