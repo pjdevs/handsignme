@@ -62,6 +62,11 @@ export default {
       }
     }
   },
+  computed: {
+    filledConfig () {
+      return this.configData
+    }
+  },
   watch: {
     index (oldIndex, newIndex) {
       this.render()
@@ -71,18 +76,33 @@ export default {
     }
   },
   methods: {
-    renderConfig (context, docWidth, docHeight) {
-      for (const configObject of this.config) {
+    renderConfig (ctx, docWidth, docHeight) {
+      for (const configObject of this.configData) {
         if (configObject.pages.includes(this.index) && configObject.signature) {
-          context.strokeStyle = configObject.signature.rect.color
-          context.lineWidth = 5 * this.currentScale
-          context.rect(
+          ctx.strokeStyle = configObject.signature.rect.color
+          ctx.lineWidth = 5 * this.currentScale
+          ctx.rect(
             configObject.signature.rect.x * docWidth,
             configObject.signature.rect.y * docHeight,
             configObject.signature.rect.width * docWidth,
             configObject.signature.rect.height * docHeight
           )
-          context.stroke()
+          ctx.stroke()
+
+          if (configObject.signature.data) {
+            ctx.strokeStyle = configObject.signature.color
+            ctx.lineWidth = 3 * this.currentScale
+            ctx.beginPath()
+            for (const line of configObject.signature.data) {
+              console.log(line)
+              ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
+              ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
+            }
+            ctx.closePath()
+            ctx.stroke()
+          } else {
+            configObject.signature.data = []
+          }
 
           this.registerSignatureHandler(configObject, docWidth, docHeight)
         }
@@ -155,7 +175,7 @@ export default {
           position.y <= configObject.signature.rect.y * docHeight + configObject.signature.rect.height * docHeight
       }
 
-      function setDrawStyle (config) {
+      function setDrawStyle () {
         ctx.strokeStyle = configObject.signature.color
         ctx.lineWidth = 3 * vm.currentScale
       }
@@ -173,6 +193,7 @@ export default {
 
         function handleEndDrawing (e) {
           isDrawing = false
+          console.log(vm.configData)
         }
 
         function handleDrawing (e) {
@@ -186,8 +207,19 @@ export default {
             ctx.moveTo(lastPosition.x, lastPosition.y)
             ctx.lineTo(position.x, position.y)
             ctx.closePath()
-            setDrawStyle(position)
+            setDrawStyle()
             ctx.stroke()
+
+            configObject.signature.data.push({
+              from: {
+                x: lastPosition.x / docWidth,
+                y: lastPosition.y / docHeight
+              },
+              to: {
+                x: position.x / docWidth,
+                y: position.y / docHeight
+              }
+            })
 
             lastPosition.x = position.x
             lastPosition.y = position.y
@@ -232,7 +264,7 @@ export default {
             ctx.moveTo(lastPosition.x, lastPosition.y)
             ctx.lineTo(position.x, position.y)
             ctx.closePath()
-            setDrawStyle(position)
+            setDrawStyle()
             ctx.stroke()
 
             lastPosition.x = position.x
@@ -260,6 +292,7 @@ export default {
     const vm = this
     this.loading = true
     this.doc = { numPages: 0 }
+    this.configData = this.config
     this.cleanHandlers = []
 
     pdfjs.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js'
