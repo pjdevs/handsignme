@@ -3,10 +3,10 @@ import PDFViewer from '@/components/PDFViewer.vue'
 
 describe('PDFViewer.vue', () => {
   it('pass a fake test', () => {
-    const url = 'fake url'
+    const src = 'fake.url'
     const wrapper = shallowMount(PDFViewer, {
-      props: { url }
+      props: { src }
     })
-    expect(wrapper.props().url).toMatch(url)
+    expect(wrapper.props().src).toMatch(src)
   })
 })
