@@ -62,11 +62,6 @@ export default {
       }
     }
   },
-  computed: {
-    filledConfig () {
-      return this.configData
-    }
-  },
   watch: {
     index (oldIndex, newIndex) {
       this.render()
@@ -76,34 +71,38 @@ export default {
     }
   },
   methods: {
-    renderConfig (ctx, docWidth, docHeight) {
+    filledConfig () {
+      return this.configData
+    },
+    renderConfig (ctx, configObject, docWidth, docHeight) {
+      ctx.rect(
+        configObject.signature.rect.x * docWidth,
+        configObject.signature.rect.y * docHeight,
+        configObject.signature.rect.width * docWidth,
+        configObject.signature.rect.height * docHeight
+      )
+      ctx.strokeStyle = configObject.signature.rect.color
+      ctx.lineWidth = 5 * this.currentScale
+      ctx.stroke()
+
+      if (configObject.signature.data) {
+        ctx.beginPath()
+        for (const line of configObject.signature.data) {
+          ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
+          ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
+        }
+        ctx.closePath()
+        ctx.strokeStyle = configObject.signature.color
+        ctx.lineWidth = 3 * this.currentScale
+        ctx.stroke()
+      } else {
+        configObject.signature.data = []
+      }
+    },
+    setupConfig (ctx, docWidth, docHeight) {
       for (const configObject of this.configData) {
         if (configObject.pages.includes(this.index) && configObject.signature) {
-          ctx.strokeStyle = configObject.signature.rect.color
-          ctx.lineWidth = 5 * this.currentScale
-          ctx.rect(
-            configObject.signature.rect.x * docWidth,
-            configObject.signature.rect.y * docHeight,
-            configObject.signature.rect.width * docWidth,
-            configObject.signature.rect.height * docHeight
-          )
-          ctx.stroke()
-
-          if (configObject.signature.data) {
-            ctx.strokeStyle = configObject.signature.color
-            ctx.lineWidth = 3 * this.currentScale
-            ctx.beginPath()
-            for (const line of configObject.signature.data) {
-              console.log(line)
-              ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
-              ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
-            }
-            ctx.closePath()
-            ctx.stroke()
-          } else {
-            configObject.signature.data = []
-          }
-
+          this.renderConfig(ctx, configObject, docWidth, docHeight)
           this.registerSignatureHandler(configObject, docWidth, docHeight)
         }
       }
@@ -117,7 +116,7 @@ export default {
 
       this.cleanHandlers.forEach(handler => handler())
       const canvas = this.$refs.pdfPage
-      const context = canvas.getContext('2d')
+      const ctx = canvas.getContext('2d')
 
       const docWidth = Math.floor(viewport.width * outputScale)
       const docHeight = Math.floor(viewport.height * outputScale)
@@ -132,13 +131,13 @@ export default {
         : null
 
       const renderContext = {
-        canvasContext: context,
+        canvasContext: ctx,
         transform: transform,
         viewport: viewport
       }
 
       await page.render(renderContext).promise
-      this.renderConfig(context, docWidth, docHeight)
+      this.setupConfig(ctx, docWidth, docHeight)
     },
     previous () {
       if (this.index > 1) { this.index-- }
@@ -175,11 +174,6 @@ export default {
           position.y <= configObject.signature.rect.y * docHeight + configObject.signature.rect.height * docHeight
       }
 
-      function setDrawStyle () {
-        ctx.strokeStyle = configObject.signature.color
-        ctx.lineWidth = 3 * vm.currentScale
-      }
-
       // PC functions
       function handleStartDrawing (e) {
         lastPosition.x = e.offsetX
@@ -193,7 +187,6 @@ export default {
 
         function handleEndDrawing (e) {
           isDrawing = false
-          console.log(vm.configData)
         }
 
         function handleDrawing (e) {
@@ -207,7 +200,8 @@ export default {
             ctx.moveTo(lastPosition.x, lastPosition.y)
             ctx.lineTo(position.x, position.y)
             ctx.closePath()
-            setDrawStyle()
+            ctx.strokeStyle = configObject.signature.color
+            ctx.lineWidth = 3 * vm.currentScale
             ctx.stroke()
 
             configObject.signature.data.push({
@@ -236,7 +230,7 @@ export default {
 
         function getTouchPosition (e) {
           const touch = e.touches[0]
-          return { x: (touch.pageX - canvasRect.x) * window.devicePixelRatio || 1, y: (touch.pageY - canvasRect.y) * window.devicePixelRatio || 1 }
+          return { x: (touch.pageX - canvasRect.x) * (window.devicePixelRatio || 1), y: (touch.pageY - canvasRect.y) * (window.devicePixelRatio || 1) }
         }
 
         lastPosition = getTouchPosition(e)
@@ -264,7 +258,8 @@ export default {
             ctx.moveTo(lastPosition.x, lastPosition.y)
             ctx.lineTo(position.x, position.y)
             ctx.closePath()
-            setDrawStyle()
+            ctx.strokeStyle = configObject.signature.color
+            ctx.lineWidth = 3 * vm.currentScale
             ctx.stroke()
 
             lastPosition.x = position.x
