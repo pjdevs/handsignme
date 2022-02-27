@@ -6,7 +6,7 @@
       <button @click="zoom">+</button>
       <button @click="unzoom">-</button>
       <span>{{Math.round(currentScale * 100) + '%'}}</span>
-      <span>{{index}} / {{doc.numPages}}</span>
+      <span>{{index}} / {{numPages}}</span>
     </div>
     <div class="pdf-page-wrapper section">
       <canvas v-bind:class="{ invisible: loading }" ref="pdfPage"></canvas>
@@ -16,21 +16,16 @@
 </template>
 
 <script>
-import { toRaw } from 'vue'
 import * as pdfjs from 'pdfjs-dist'
 
 export default {
   name: 'PDFViewer',
-  provide: {
-    pdfjs: pdfjs
-  },
   data () {
     return {
       index: 1,
       currentScale: Number(this.scale),
       loading: false,
-      doc: { numPages: 0 },
-      cleanHandlers: []
+      numPages: 0
     }
   },
   props: {
@@ -96,12 +91,9 @@ export default {
     async render () {
       const vm = this
 
-      const doc = toRaw(this.doc)
-      const page = await doc.getPage(this.index)
-
+      const page = await this.doc.getPage(this.index)
       const viewport = page.getViewport({ scale: vm.currentScale })
-      // Support HiDPI-screens.
-      const outputScale = window.devicePixelRatio || 1
+      const outputScale = window.devicePixelRatio || 1 // Support HiDPI-screens.
 
       this.cleanHandlers.forEach(handler => handler())
       const canvas = this.$refs.pdfPage
@@ -267,11 +259,14 @@ export default {
   mounted () {
     const vm = this
     this.loading = true
+    this.doc = { numPages: 0 }
+    this.cleanHandlers = []
 
     pdfjs.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js'
     pdfjs.getDocument(this.src).promise
       .then(doc => {
         vm.doc = doc
+        vm.numPages = doc.numPages
         return vm.render()
       })
       .then(() => {
