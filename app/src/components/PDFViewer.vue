@@ -1,10 +1,10 @@
 <template>
   <div class="pdf-viewer">
     <div v-if="!loading" class="section">
-      <button @click="previous">Previous</button>
-      <button @click="next">Next</button>
-      <button @click="zoom">+</button>
-      <button @click="unzoom">-</button>
+      <v-btn @click="previous">Previous</v-btn>
+      <v-btn @click="next">Next</v-btn>
+      <v-btn @click="zoom">+</v-btn>
+      <v-btn @click="unzoom">-</v-btn>
       <span>{{Math.round(currentScale * 100) + '%'}}</span>
       <span>{{index}} / {{numPages}}</span>
     </div>
