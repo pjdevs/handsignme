@@ -1,24 +1,17 @@
 <template>
   <v-app>
-    <v-navigation-drawer app>
-      <v-list-item>
-        <v-list-item-content>
-          <v-list-item-title class="text-h6">
-            HandSignMe
-          </v-list-item-title>
-          <v-list-item-subtitle>
-            Menu
-          </v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
-      <v-divider></v-divider>
+    <v-navigation-drawer v-model="drawer" elevation="1" app>
       <v-list dense nav>
         <router-link v-for="item in items" :key="item.title" :to="item.route">
           <v-list-item :title="item.title" :prepend-icon="item.icon" link/>
         </router-link>
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar app>
+    <v-app-bar elevation="1" app shaped>
+      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>HandSignMe</v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn variant="text" icon="mdi-dots-vertical"></v-btn>
     </v-app-bar>
     <v-main>
       <v-container fill-height fluid>
@@ -38,7 +31,8 @@ export default {
     return {
       items: [
         { title: 'Home', route: '/', icon: 'mdi-home' }
-      ]
+      ],
+      drawer: false
     }
   }
 }

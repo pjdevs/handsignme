@@ -6,7 +6,7 @@ const port = process.env.PORT || 8000
 const app = express()
 app.disable('x-powered-by')
 
-app.use(routes(db))
+app.use('/api', routes(db))
 
 const server = app.listen(port, () => {
     const adress = server.address()

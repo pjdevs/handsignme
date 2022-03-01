@@ -1,17 +1,26 @@
 <template>
   <div class="pdf-viewer">
-    <div v-if="!loading" class="section">
-      <v-btn @click="previous">Previous</v-btn>
-      <v-btn @click="next">Next</v-btn>
-      <v-btn @click="zoom">+</v-btn>
-      <v-btn @click="unzoom">-</v-btn>
-      <span>{{Math.round(currentScale * 100) + '%'}}</span>
-      <span>{{index}} / {{numPages}}</span>
-    </div>
-    <div class="pdf-page-wrapper section">
-      <canvas v-bind:class="{ invisible: loading }" ref="pdfPage"></canvas>
-    </div>
-    <p v-if="loading">Loading...</p>
+    <v-row align="center" justify="center">
+      <div v-if="!loading">
+        <div>
+          <v-btn class="ma-2" elevation="0" @click="previous"><v-icon>mdi-skip-previous</v-icon></v-btn>
+          <span>{{index}} / {{numPages}}</span>
+          <v-btn class="ma-2" elevation="0" @click="next"><v-icon>mdi-skip-next</v-icon></v-btn>
+          <v-divider vertical></v-divider>
+          <v-btn class="ma-2" elevation="0" @click="unzoom"><v-icon>mdi-minus</v-icon></v-btn>
+          <span>{{Math.round(currentScale * 100) + '%'}}</span>
+          <v-btn class="ma-2" elevation="0" @click="zoom"><v-icon>mdi-plus</v-icon></v-btn>
+        </div>
+      </div>
+    </v-row>
+    <v-row align="center" justify="center">
+      <div class="pdf-page-wrapper overflow-y-auto pa-2">
+        <v-sheet class="pa-2" elevation="6">
+          <canvas v-bind:class="{ invisible: loading }" ref="pdfPage"></canvas>
+          <v-progress-circular v-if="loading" color="primary" indeterminate></v-progress-circular>
+        </v-sheet>
+      </div>
+    </v-row>
   </div>
 </template>
 
@@ -290,7 +299,7 @@ export default {
     this.configData = this.config
     this.cleanHandlers = []
 
-    pdfjs.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.min.js'
+    pdfjs.GlobalWorkerOptions.workerSrc = '/app/js/pdf.worker.min.js'
     pdfjs.getDocument(this.src).promise
       .then(doc => {
         vm.doc = doc
@@ -306,19 +315,6 @@ export default {
 </script>
 
 <style scoped>
-    canvas {
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    }
-
-    .pdf-page-wrapper {
-        overflow: scroll;
-        scrollbar-width: none;
-    }
-
-    .pdf-page-wrapper::-webkit-scrollbar {
-        display:none;
-    }
-
     .invisible {
         display: none;
     }
