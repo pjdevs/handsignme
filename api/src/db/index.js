@@ -11,11 +11,11 @@ const File = require('./models/file')(sequelize)
 
 // Associations
 File.User = File.belongsTo(User, { as: 'owner' })
-User.File = User.hasMany(File, { as: 'files' })
-
+// User.File = User.hasMany(File, { as: 'files' })
 
 // Export connection and models
 module.exports = {
+    Sequelize: Sequelize,
     sequelize: sequelize,
     User: User,
     File: File

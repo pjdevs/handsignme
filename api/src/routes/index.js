@@ -7,19 +7,30 @@ module.exports = (db) => {
     console.log(db.sequelize.options.dialect)
 
     router
-        .get('/', (req, res) => {
-            res.send('Hello from Express')
+        .get('/pdf/list', async (req, res) => {
+            const pdfList = await db.File.findAll({
+                attributes: ['id', 'name']
+            })
+
+            res.json(pdfList.map(file => file.dataValues))
         })
-        .get('/pdf/thumbnail/:id', (req, res) => {
-            res.sendFile(path.normalize(__dirname + '/../../thumbnails/sample.thumb.png'))
+        .get('/pdf/thumbnail/:id', async (req, res) => {
+            const pdf = await db.File.findByPk(req.params.id)
+
+            res.sendFile(pdf.thumbnail)
         })
-        .get('/pdf/file/:id', (req, res) => {
-            res.sendFile(path.normalize(__dirname + '/../../files/sample.pdf'))
+        .get('/pdf/file/:id', async (req, res) => {
+            const pdf = await db.File.findByPk(req.params.id)
+
+            res.sendFile(pdf.path)
         })
         .use((req, res) => {
-            res.redirect('/')
+            res.status(404).json({
+                error: {
+                    message: `${req.url} not found`
+                }
+            })
         })
-
 
     return router
 }
