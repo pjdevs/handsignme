@@ -1,6 +1,6 @@
 <template>
   <div class="sign">
-    <PDFViewer ref="viewer" src="../sample.pdf"/>
+    <PDFViewer ref="viewer" :src="`/api/pdf/file/${$route.params.pdfId}`"/>
   </div>
 </template>
 

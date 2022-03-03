@@ -2,14 +2,20 @@
 
 const db =  require(__dirname + '/../src/db')
 const path = require('path')
+const fs = require('fs')
 
 async function main() {
+    const dir = path.normalize(__dirname + '/../files') 
+
     await db.sequelize.sync({force: true})
 
-    await db.File.create({
-        name: 'Sample PDF',
-        path: path.normalize(__dirname + '/../files/sample.pdf'),
-        thumbnail: path.normalize(__dirname + '/../thumbnails/sample.thumb.png')
+    fs.readdirSync(dir).forEach(async (filename, i) => {
+        const path = `${dir}/${filename}`
+        await db.File.create({
+            name: `The PDF ${i}`,
+            path: path,
+            thumbnail: path.replace('files', 'thumbnails').concat('.thumb.png')
+        })
     })
 }
 
