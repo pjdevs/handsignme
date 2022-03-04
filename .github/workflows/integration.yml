@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   api:
-    name: API Tests
+    name: API Code Analysis & Tests
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -36,7 +36,7 @@ jobs:
           path: api/coverage/
 
   app:
-    name: App Tests
+    name: App Code Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
@@ -60,19 +60,9 @@ jobs:
         working-directory: ./app
         run: npm run lint
 
-      - name: Run app tests
-        working-directory: ./app
-        run: npm test
-
-      - name: Upload code coverage for app
-        uses: actions/upload-artifact@v2
-        with:
-          name: code-coverage-app
-          path: app/coverage
-
   code-analysis:
     needs: [api, app]
-    name: Code Analysis
+    name: Code Coverage
     runs-on: ubuntu-latest
 
     steps:
@@ -87,17 +77,11 @@ jobs:
           name: code-coverage-api
           path: api/coverage
 
-      - name: Download code coverage results for app
-        uses: actions/download-artifact@v2
-        with:
-          name: code-coverage-app
-          path: app/coverage
-
       - name: CodeCov upload
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: api/coverage/lcov.info,app/coverage/lcov.info
+          files: api/coverage/lcov.info
           flags: unittests
           fail_ci_if_error: true
           verbose: true

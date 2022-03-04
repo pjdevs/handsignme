@@ -5,12 +5,12 @@ module.exports = (sequelize) => {
     }
 
     User.init({
-        email: DataTypes.STRING,
-        passwordHash: DataTypes.STRING
+        email: DataTypes.STRING
     }, {
         sequelize,
         modelName: 'User',
-        tableName: 'Users'
+        tableName: 'Users',
+        timestamps: false
     })
 
     return User

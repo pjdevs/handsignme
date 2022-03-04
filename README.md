@@ -69,8 +69,8 @@ $ docker run -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
 
 ```
 $ cd api
-$ npx sequelize db:migrate --config src/config/sequelize.json --migrations-path src/db/migrations
-$ npx sequelize db:seed:all --config src/config/sequelize.json --seeders-path src/db/seeders
+$ npx sequelize db:migrate
+$ npx sequelize db:seed:all
 ```
 
 ### Tests
@@ -89,15 +89,18 @@ $ npm test
 
 ### Start
 
-Then you can start the service in developement mode :
+Then you can start the service :
 
-1. Sart the Node.js API
+1. Create a `.env` file for passwords, host, port...
+
+2. Sart the Node.js API
 ```
 $ cd api
-$ npm start
+$ npm run dev # for developement
+$ npm run prod # for production
 ```
 
-2. Run the Vue.js application
+3. Run the Vue.js application
 ```
 $ cd app
 $ npm run serve

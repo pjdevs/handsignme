@@ -1,28 +1,14 @@
 const express = require('express')
+const createControllers = require('../controllers')
 
-module.exports = (db) => {
+module.exports = (db, config) => {
     const router = express.Router()
-
-    console.log(db.sequelize.options.dialect)
+    const controllers = createControllers(db, config)
 
     router
-        .get('/pdf/list', async (req, res) => {
-            const pdfList = await db.File.findAll({
-                attributes: ['id', 'name']
-            })
-
-            res.json(pdfList.map(file => file.dataValues))
-        })
-        .get('/pdf/thumbnail/:id', async (req, res) => {
-            const pdf = await db.File.findByPk(req.params.id)
-
-            res.sendFile(pdf.thumbnail)
-        })
-        .get('/pdf/file/:id', async (req, res) => {
-            const pdf = await db.File.findByPk(req.params.id)
-
-            res.sendFile(pdf.path)
-        })
+        .get('/pdf/list', controllers.pdf.getPdfList)
+        .get('/pdf/file/:id', controllers.pdf.getPdfById)
+        .get('/pdf/thumbnail/:id', controllers.pdf.getPdfThumbnailById)
         .use((req, res) => {
             res.status(404).json({
                 error: {

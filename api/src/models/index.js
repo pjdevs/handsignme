@@ -6,12 +6,11 @@ const config = require(__dirname + '/../config/sequelize.json')[env]
 const sequelize = new Sequelize(config.database, config.username, config.password, config)
 
 // Get models
-const User = require('./models/user')(sequelize)
-const File = require('./models/file')(sequelize)
+const User = require('./user')(sequelize)
+const File = require('./file')(sequelize)
 
 // Associations
 File.User = File.belongsTo(User, { as: 'owner' })
-// User.File = User.hasMany(File, { as: 'files' })
 
 // Export connection and models
 module.exports = {

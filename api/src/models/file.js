@@ -5,22 +5,19 @@ module.exports = (sequelize) => {
     }
 
     File.init({
-        path: {
+        file: {
             type: DataTypes.STRING,
             allowNull: false
         },
         name: {
             type: DataTypes.STRING,
             allowNull: false
-        },
-        thumbnail: {
-            type: DataTypes.STRING,
-            allowNull: false
         }
     }, {
         sequelize,
         modelName: 'File',
-        tableName: 'Files'
+        tableName: 'Files',
+        timestamps: false
     })
     
     return File
