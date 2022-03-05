@@ -62,7 +62,45 @@ module.exports = {
                 maxBOF: 0,
                 maxEOF: 1
             }
-        ]
+        ],
+        'key-spacing': [
+            'error',
+            {
+                beforeColon: false,
+                afterColon: true
+            }
+        ],
+        'curly': [
+            'error',
+            'all'
+        ],
+        'brace-style': [
+            2,
+            '1tbs',
+            {
+                'allowSingleLine': false
+            }
+        ],
+        'no-trailing-spaces': [
+            'error'
+        ],
+        'space-before-blocks': [
+            'error',
+            'always'
+        ],
+        'arrow-spacing': [
+            'error',
+            {
+                before: true,
+                after: true
+            }
+        ],
+        'no-multi-spaces': 'error',
+        'block-spacing': [
+            'error',
+            'always'
+        ],
+        'space-before-function-paren': 0
     },
     overrides: [
         {
