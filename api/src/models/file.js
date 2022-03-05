@@ -19,6 +19,6 @@ module.exports = (sequelize) => {
         tableName: 'Files',
         timestamps: false
     })
-    
+
     return File
 }

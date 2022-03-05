@@ -8,13 +8,16 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             name: {
+                allowNull: false,
                 type: Sequelize.STRING
             },
             file: {
+                allowNull: false,
                 type: Sequelize.STRING
             },
-            ownerId: {
+            userId: {
                 type: Sequelize.INTEGER,
+                allowNull: false,
                 references: {
                     model: 'Users',
                     key: 'id'

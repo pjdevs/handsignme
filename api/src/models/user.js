@@ -5,7 +5,13 @@ module.exports = (sequelize) => {
     }
 
     User.init({
-        email: DataTypes.STRING
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            validate: {
+                isEmail: true
+            }
+        }
     }, {
         sequelize,
         modelName: 'User',
