@@ -31,6 +31,25 @@ module.exports = {
         semi: [
             'error',
             'never'
+        ],
+        'comma-spacing': [
+            'error',
+            {
+                before: false,
+                after: true
+            }
+        ],
+        'object-curly-spacing': [
+            'error',
+            'always'
+        ],
+        'array-bracket-spacing': [
+            'error',
+            'never'
+        ],
+        'comma-dangle': [
+            'error',
+            'never'
         ]
     },
     overrides: [

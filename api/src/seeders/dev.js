@@ -26,7 +26,7 @@ module.exports = {
     },
 
     async down(queryInterface) {
-        await queryInterface.bulkDelete('Users', {email: 'test@mail.com'})
-        await queryInterface.bulkDelete('Files', {name: {[Op.or]: ['Cahier des charges', 'Sample PDF']}})
+        await queryInterface.bulkDelete('Users', {  email: 'test@mail.com' })
+        await queryInterface.bulkDelete('Files', {  name: { [Op.or]: ['Cahier des charges', 'Sample PDF'] } })
     }
 }
