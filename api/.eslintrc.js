@@ -100,7 +100,15 @@ module.exports = {
             'error',
             'always'
         ],
-        'space-before-function-paren': 0
+        'space-before-function-paren': 0,
+        eqeqeq: [
+            'error',
+            'always'
+        ],
+        'space-infix-ops': [
+            'error',
+            { 'int32Hint': false }
+        ]
     },
     overrides: [
         {
