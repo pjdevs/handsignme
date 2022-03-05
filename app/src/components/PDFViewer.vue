@@ -61,7 +61,7 @@ export default {
                 y: 0.85,
                 width: 0.3,
                 height: 0.1,
-                color: ['red', 'orange', 'purple'][Math.floor(Math.random() * 3)]
+                color: 'purple'
               },
               color: 'black'
             },
