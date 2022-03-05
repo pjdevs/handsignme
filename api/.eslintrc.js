@@ -50,6 +50,10 @@ module.exports = {
         'comma-dangle': [
             'error',
             'never'
+        ],
+        'space-in-parens': [
+            'error',
+            'never'
         ]
     },
     overrides: [
