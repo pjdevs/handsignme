@@ -36,7 +36,8 @@ module.exports = {
                 showOtherSignatures: true,
                 data: '{}'
             }
-        ]),
+        ])
+
         await queryInterface.bulkInsert('Documents', [
             {
                 fileId: 0,
