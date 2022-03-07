@@ -11,5 +11,8 @@ module.exports = {
     ],
     testMatch: [
         '**/tests/**/*.(spec|test).js'
+    ],
+    collectCoverageFrom: [
+        'src/controllers/**/*.js'
     ]
 }

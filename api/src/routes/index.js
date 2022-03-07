@@ -1,14 +1,9 @@
-const express = require('express')
-const createControllers = require('../controllers')
-
 module.exports = (db, config) => {
-    const router = express.Router()
-    const controllers = createControllers(db, config)
+    const router = require('express').Router()
+    const pdf = require('./pdf')(db, config)
 
     router
-        .get('/pdf/list', controllers.pdf.getPdfList)
-        .get('/pdf/file/:id', controllers.pdf.getPdfById)
-        .get('/pdf/thumbnail/:id', controllers.pdf.getPdfThumbnailById)
+        .use('/pdf', pdf)
         .use((req, res) => {
             res.status(404).json({
                 error: {
