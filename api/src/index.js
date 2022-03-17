@@ -2,11 +2,14 @@ const express = require('express')
 const routes = require('./routes')
 const db = require('./models')
 const config = require('./config')
+const multer = require('multer')
+
+const upload = multer({})
 
 const app = express()
 app.disable('x-powered-by')
 
-app.use('/api', routes(db, config))
+app.use('/api', routes(db, config, { upload }))
 
 const server = app.listen(config.server.port, config.server.host, () => {
     const adress = server.address()

@@ -1,6 +1,6 @@
-module.exports = (db, config) => {
+module.exports = (db, config, middlewares) => {
     const router = require('express').Router()
-    const pdf = require('./pdf')(db, config)
+    const pdf = require('./pdf')(db, config, middlewares)
 
     router
         .use('/pdf', pdf)

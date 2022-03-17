@@ -7,7 +7,10 @@
         </v-card>
       </v-col>
       <v-col class="d-inline-flex" lg="auto">
-        <v-btn class="ma-2 justify-center" icon="mdi-book-plus-outline"></v-btn>
+        <form method="POST" action="/api/pdf/upload" enctype="multipart/form-data">
+          <input type="file" name="myfile" accept="application/pdf">
+          <v-btn type="submit" class="ma-2 justify-center" icon="mdi-book-plus-outline"></v-btn>
+        </form>
       </v-col>
     </v-row>
   </div>

@@ -20,6 +20,10 @@ module.exports = (db, config) => {
             const pdf = await db.File.findByPk(req.params.id)
 
             res.download(`${base}/${config.storage.filesPath}/${pdf.file}`, pdf.file)
+        },
+        uploadPdf: async (req, res) => {
+            console.log(req.file)
+            res.json({ msg: 'success' })
         }
     }
 }
