@@ -21,10 +21,10 @@
             <div class="w-full lg:w-6/12 px-4 ml-auto mr-auto text-center">
               <div class="pr-12">
                 <h1 class="text-white font-semibold text-5xl">
-                  Hand Sign Me
+                  HandSignMe
                 </h1>
                 <p class="mt-4 text-lg text-blueGray-200">
-                  Outil de Signature pour signer électroniquement les documents.
+                  Outil de Signature Open Source pour signer électroniquement les documents.
                   Signez vos propres documents et envoyez des invitations à signer.
                 </p>
               </div>
@@ -68,9 +68,9 @@
                   </div>
                   <h6 class="text-xl font-semibold">Signez facilement des PDF en ligne</h6>
                   <p class="mt-2 mb-4 text-blueGray-500">
-                     L’outil de signature en ligne d’Acrobat permet de remplir des PDF et
+                     L'outil de signature en ligne opensource permet de remplir des PDF et
                       de les signer électroniquement en toute confiance.
-                     Il n’a jamais été aussi facile de signer des documents PDF.
+                     Il n'a jamais été aussi facile de signer des documents PDF.
                   </p>
                 </div>
               </div>
@@ -116,55 +116,6 @@
           </div>
 
           <div class="flex flex-wrap items-center mt-32">
-            <div class="w-full md:w-5/12 px-4 mr-auto ml-auto">
-
-              <h3 class="text-3xl mb-2 font-semibold leading-normal">
-                Qu'est-ce qu'une signature numérique?
-              </h3>
-              <p
-                class="text-lg font-light leading-relaxed mt-4 mb-4 text-blueGray-600"
-              >
-                  Une signature numérique est un type bien précis de signature électronique
-                  conforme aux réglementations juridiques les plus strictes,
-                  et offrant les niveaux de garantie les plus élevés sur l'identité d'un signataire.
-
-              </p>
-
-            </div>
-
-            <div class="w-full md:w-4/12 px-4 mr-auto ml-auto">
-              <div
-                class="relative flex flex-col min-w-0 break-words bg-white w-full mb-6 shadow-lg rounded-lg bg-emerald-500"
-              >
-                <img
-                  alt="..."
-                  src="https://blog.dataprius.com/wp-content/uploads/2020/04/firma-digital-documentos-dataprius.jpg"
-                  class="w-full align-middle rounded-t-lg"
-                />
-                <blockquote class="relative p-8 mb-4">
-                  <svg
-                    preserveAspectRatio="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 583 95"
-                    class="absolute left-0 w-full block h-95-px -top-94-px"
-                  >
-                    <polygon
-                      points="-30,95 583,95 583,65"
-                      class="text-emerald-500 fill-current"
-                    ></polygon>
-                  </svg>
-                  <p>
-                    <ul>- garantir l'intégrité d'un document</ul>
-                    <ul>- authentifier son auteur</ul>
-                    <ul>- rapporter la preuve du consentement</ul>
-                  </p>
-                  <i class=" text-white">
-                    <a href="https://smallpdf.com/blog?type=how-to&tool=esign-pdf">Voir plus d'article ..</a>
-                  </i>
-
-                </blockquote>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -288,60 +239,6 @@
         </div>
 
         <div class="container mx-auto px-4 lg:pt-24 lg:pb-64">
-          <div class="flex flex-wrap text-center justify-center">
-            <div class="w-full lg:w-6/12 px-4">
-              <h2 class="text-4xl font-semibold text-white">
-                Autres Services
-              </h2>
-              <p class="text-lg leading-relaxed mt-4 mb-4 text-blueGray-400">
-                vous pouvez utiliser ces services en ligne gratuitement
-                pour modifier et mettre en forme votre PDF.
-              </p>
-            </div>
-          </div>
-          <div class="flex flex-wrap mt-12 justify-center">
-            <div class="w-full lg:w-3/12 px-4 text-center">
-              <div
-                class="text-blueGray-800 p-3 w-12 h-12 shadow-lg rounded-full bg-white inline-flex items-center justify-center"
-              >
-               <a href="https://www.ilovepdf.com/fr/compresser_pdf" target="_blank"><i class="fa fa-compress" aria-hidden="true"></i></a>
-
-              </div>
-              <h6 class="text-xl mt-5 font-semibold text-white">
-                Convertir et compresser
-              </h6>
-              <p class="mt-2 mb-4 text-blueGray-400">
-                compresser votre pdf pour  le déposer en moins de temp.
-              </p>
-            </div>
-            <div class="w-full lg:w-3/12 px-4 text-center">
-              <div
-                class="text-blueGray-800 p-3 w-12 h-12 shadow-lg rounded-full bg-white inline-flex items-center justify-center"
-              >
-               <a href="https://www.ilovepdf.com/fr/fusionner_pdf" target="_blank"><i class="fa fa-wrench" aria-hidden="true"></i></a>
-
-              </div>
-              <h5 class="text-xl mt-5 font-semibold text-white">
-                Diviser et fusionner
-              </h5>
-              <p class="mt-2 mb-4 text-blueGray-400">
-                déposer que les pages à signer et puis les fusionner.
-              </p>
-            </div>
-            <div class="w-full lg:w-3/12 px-4 text-center">
-              <div
-                class="text-blueGray-800 p-3 w-12 h-12 shadow-lg rounded-full bg-white inline-flex items-center justify-center"
-              >
-                <a href="https://www.ilovepdf.com/fr/jpg_en_pdf" target="_blank"> <i class="fas fa-lightbulb text-xl"></i> </a>
-              </div>
-              <h5 class="text-xl mt-5 font-semibold text-white">
-                Convertir en PDF
-              </h5>
-              <p class="mt-2 mb-4 text-blueGray-400">
-                convertir les images en pdf afin d'avoir la permission à les signer.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
       <section class="relative block py-24 lg:pt-0 bg-blueGray-800">
@@ -356,7 +253,7 @@
                     Discuter avec l'Administrateur
                   </h4>
                   <p class="leading-relaxed mt-1 mb-4 text-blueGray-500">
-                    Compléter ce formulaire et vous allez recevoir la réponse dans 24 heurs.
+                    Compléter ce formulaire et vous allez recevoir la réponse dans 24 heures.
                   </p>
                   <div class="relative w-full mb-3 mt-8">
                     <label
