@@ -7,6 +7,7 @@ module.exports = (db, config, middlewares) => {
         .get('/file/:id', pdf.getPdfById)
         .get('/thumbnail/:id', pdf.getPdfThumbnailById)
         .post('/upload', middlewares.upload.single('myfile'), pdf.uploadPdf)
+        .get('/delete/:name', pdf.deletePdf)
 
     return router
 }
