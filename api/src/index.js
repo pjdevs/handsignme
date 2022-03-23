@@ -10,14 +10,14 @@ const upload = multer({
     storage: storage,
     limits: {
         fieldNameSize: 100,
-        fileSize: 8000000
+        fileSize: 5000000
     }
 })
 
 const app = express()
 app.disable('x-powered-by')
 
-app.use('/api', bodyParser.json({ limit: '2mb' }))
+app.use('/api', bodyParser.json())
 app.use('/api', bodyParser.urlencoded({ extended: false, limit: '2mb' }))
 app.use('/api', routes(db, config, { upload }))
 
