@@ -4,7 +4,12 @@ const db = require('./models')
 const config = require('./config')
 const multer = require('multer')
 
-const upload = multer({})
+const storage = multer.memoryStorage()
+const upload = multer({ storage: storage,
+    limits: {
+        fieldNameSize: 100,
+        fileSize: 1048576
+    } })
 
 const app = express()
 app.disable('x-powered-by')

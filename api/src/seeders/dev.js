@@ -14,13 +14,13 @@ module.exports = {
                 id: 0,
                 name: 'Cahier des charges',
                 file: 'CDC_HSM_v2.pdf',
-                userId: 0
+                ownerId: 0
             },
             {
                 id: 1,
                 name: 'Sample PDF',
                 file: 'sample.pdf',
-                userId: 0
+                ownerId: 0
             }
         ])
 

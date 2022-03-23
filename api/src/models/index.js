@@ -12,7 +12,7 @@ const Document = require('./document')(sequelize)
 const Configuration = require('./configuration')(sequelize)
 
 // Associations
-File.User = Document.belongsTo(File)
+File.User = File.belongsTo(User, { as: 'owner' })
 File.Configuration = File.belongsToMany(Configuration, { through: Document })
 Configuration.File = Configuration.belongsToMany(File, { through: Document })
 
