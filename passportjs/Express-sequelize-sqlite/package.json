@@ -1,0 +1,38 @@
+{
+  "name": "express-passport-sequelize-mysql",
+  "version": "1.0.0",
+  "description": "This is a quick-start application that demonstrates basic authentication using Passport and Sequelize. It is built with: * [Node.js](https://nodejs.org/en/) * [Express](http://expressjs.com/) * [Passport](http://passportjs.org) * [Sequelize](http://sequelizejs.com) * [Handlebars](http://handlebarsjs.com/) * and [Nightwatch](http://nightwatchjs.org/)",
+  "main": "app.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JasonDeving/Express-passport-sequelize-mysql.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JasonDeving/Express-passport-sequelize-mysql/issues"
+  },
+  "homepage": "https://github.com/JasonDeving/Express-passport-sequelize-mysql#readme",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.2",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "express-handlebars": "^6.0.3",
+    "express-session": "^1.17.2",
+    "passport": "^0.5.2",
+    "passport-google-oauth2": "^0.2.0",
+    "passport-local": "^1.0.0",
+    "sequelize": "^6.17.0",
+    "sqlite3": "^5.0.2"
+  }
+}
