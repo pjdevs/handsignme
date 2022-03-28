@@ -7,11 +7,19 @@ describe('PDF Controller', () => {
             const { req, res } = require('./controllerCommon')
 
             const myFiles = [
-                { id: 12, name: 'File', file: 'file.pdf', owner: { email: 'test@mail.com' } }
+                {
+                    id: 12,
+                    name: 'File',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
             ]
 
             await db.sequelize.sync({ force: true })
-            await db.File.create(myFiles[0], { include: [db.File.User] })
+            await db.User.create({ id: 0, email: 'test@mail.com' })
+            await db.Configuration.create({ id: 0, email: 'test2@mail.com', description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFiles[0])
             await pdf.getPdfList(req, res)
 
             expect(res.json).toHaveBeenCalledWith(myFiles.map(file => ({ id: file.id, name: file.name })))
