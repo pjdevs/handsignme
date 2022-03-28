@@ -9,55 +9,63 @@ module.exports = {
             }
         ])
 
-        await queryInterface.bulkInsert('Files', [
-            {
-                id: 0,
-                name: 'Cahier des charges',
-                file: 'CDC_HSM_v2.pdf',
-                ownerId: 0
-            },
-            {
-                id: 1,
-                name: 'Sample PDF',
-                file: 'sample.pdf',
-                ownerId: 0
-            }
-        ])
-
         await queryInterface.bulkInsert('Configurations', [
             {
                 id: 0,
                 description: 'Signe mon super PDF stp',
-                showOtherSignatures: false
+                showOtherSignatures: false,
+                data: '{}'
             },
             {
                 id: 1,
                 description: 'Signe mon super PDF stp',
-                showOtherSignatures: true,
-                data: '{}'
+                showOtherSignatures: true
             }
         ])
 
         await queryInterface.bulkInsert('Documents', [
             {
-                fileId: 0,
+                id: 0,
+                name: 'Cahier des charges',
+                filename: 'CDC_HSM_v2.pdf',
+                ownerId: 0,
                 configurationId: 0
             },
             {
-                fileId: 0,
+                id: 1,
+                name: 'Sample PDF',
+                filename: 'sample.pdf',
+                ownerId: 0,
                 configurationId: 1
+            }
+        ])
+
+        await queryInterface.bulkInsert('Signatories', [
+            {
+                id: 0,
+                email: 'test0@mail.com',
+                documentId: 0,
+                signed: true
             },
             {
-                fileId: 1,
-                configurationId: 1
+                id: 1,
+                email: 'test1@mail.com',
+                documentId: 0,
+                signed: true
+            },
+            {
+                id: 2,
+                email: 'test2@mail.com',
+                documentId: 1,
+                signed: false
             }
         ])
     },
 
     async down(queryInterface) {
-        await queryInterface.bulkDelete('Documents', { fileId: { [Op.or]: [0, 1] } })
+        await queryInterface.bulkDelete('Documents', { id: { [Op.or]: [0, 1] } })
         await queryInterface.bulkDelete('Configurations', { id: { [Op.or]: [0, 1] } })
-        await queryInterface.bulkDelete('Files', { id: { [Op.or]: [0, 1] } })
+        await queryInterface.bulkDelete('Signatories', { id: { [Op.or]: [0, 1, 2] } })
         await queryInterface.bulkDelete('Users', { id: { [Op.or]: [0, 1] } })
     }
 }

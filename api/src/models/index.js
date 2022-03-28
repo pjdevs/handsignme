@@ -7,21 +7,21 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 
 // Get models
 const User = require('./user')(sequelize)
-const File = require('./file')(sequelize)
+const Signatory = require('./signatory')(sequelize)
 const Document = require('./document')(sequelize)
 const Configuration = require('./configuration')(sequelize)
 
 // Associations
-File.User = File.belongsTo(User, { as: 'owner' })
-File.Configuration = File.belongsToMany(Configuration, { through: Document })
-Configuration.File = Configuration.belongsToMany(File, { through: Document })
+Document.User = Document.belongsTo(User, { as: 'owner' })
+Document.Configuration = Document.hasOne(Configuration)
+Signatory.Document = Signatory.belongsTo(Document)
 
 // Export connection and models
 module.exports = {
     Sequelize: Sequelize,
     sequelize: sequelize,
     User: User,
-    File: File,
+    Signatory: Signatory,
     Document: Document,
     Configuration: Configuration
 }

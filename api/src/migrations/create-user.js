@@ -12,7 +12,8 @@ module.exports = {
                 type: Sequelize.STRING,
                 validate: {
                     isEmail: true
-                }
+                },
+                unique: true
             }
         })
     },

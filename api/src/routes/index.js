@@ -10,5 +10,16 @@ router
             }
         })
     })
+    // eslint-disable-next-line no-unused-vars
+    .use((err, req, res, next) => {
+        res.status(err.status || 500)
+            .json({
+                error: {
+                    name: err.name,
+                    msg: err.message,
+                    text: err.toString()
+                }
+            })
+    })
 
 module.exports = router

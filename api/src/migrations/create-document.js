@@ -1,19 +1,33 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
         await queryInterface.createTable('Documents', {
-            fileId: {
-                type: Sequelize.INTEGER,
+            id: {
+                allowNull: false,
+                autoIncrement: true,
                 primaryKey: true,
-                references: {
-                    model: 'Files',
-                    key: 'id'
-                }
+                type: Sequelize.INTEGER
+            },
+            name: {
+                allowNull: false,
+                type: Sequelize.STRING
+            },
+            filename: {
+                allowNull: false,
+                type: Sequelize.STRING
             },
             configurationId: {
                 type: Sequelize.INTEGER,
-                primaryKey: true,
+                allowNull: false,
                 references: {
-                    model: 'Files',
+                    model: 'Configurations',
+                    key: 'id'
+                }
+            },
+            ownerId: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                references: {
+                    model: 'Users',
                     key: 'id'
                 }
             }

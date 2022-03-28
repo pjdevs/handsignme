@@ -1,31 +1,34 @@
 module.exports = {
     async up(queryInterface, Sequelize) {
-        await queryInterface.createTable('Files', {
+        await queryInterface.createTable('Signatories', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            name: {
+            email: {
                 allowNull: false,
-                type: Sequelize.STRING
+                type: Sequelize.STRING,
+                validate: {
+                    isEmail: true
+                }
             },
-            file: {
-                allowNull: false,
-                type: Sequelize.STRING
+            signed: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false
             },
-            ownerId: {
+            documentId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'Users',
+                    model: 'Documents',
                     key: 'id'
                 }
             }
         })
     },
     async down(queryInterface) {
-        await queryInterface.dropTable('Files')
+        await queryInterface.dropTable('Signatories')
     }
 }
