@@ -1,8 +1,7 @@
-const path = require('path')
-const base = path.normalize(__dirname + '/../..')
 const fs = require('fs')
 const config = require('../config')
 const db = require('../models')
+const { ensureThumbnail } = require('../utils/thumbnail')
 
 async function getPdfList(req, res) {
     const pdfList = await db.Document.findAll({
@@ -15,27 +14,67 @@ async function getPdfList(req, res) {
     res.json(pdfList.map(file => file.dataValues))
 }
 
-async function getPdfThumbnailById(req, res) {
+async function getPdfThumbnailById(req, res, next) {
     const pdf = await db.Document.findByPk(req.params.id)
-    const file = `${pdf.filename}.thumb.png`
 
-    res.download(`${base}/${config.storage.thumbnailsPath}/${file}`, file)
+    if (pdf === null) {
+        return next(new Error(`Cannot found PDF with id ${req.params.id}`))
+    }
+
+    try {
+        const thumbnailPath = await ensureThumbnail(pdf.filename)
+        res.download(thumbnailPath, thumbnailPath.split('/').pop())
+    } catch (err) {
+        next(err)
+    }
 }
 
-async function getPdfById(req, res) {
+async function getPdfById(req, res, next) {
     const pdf = await db.Document.findByPk(req.params.id)
 
-    res.download(`${base}/${config.storage.filesPath}/${pdf.filename}`, pdf.filename)
+    if (pdf === null) {
+        return next(new Error(`Cannot found PDF with id ${req.params.id}`))
+    }
+
+    res.download(`${config.storage.filesPath}/${pdf.filename}`, pdf.filename)
 }
 
 async function uploadPdf(req, res, next) {
-    if (req.file === undefined) {
+    if (!req.file) {
         return next(new Error('No file found in the request'))
     }
 
-    await db.Document.create({ name: 'Test', filename: req.file.originalname, ownerId: 0, configurationId: 0 })
+    if (!req.body.name) {
+        return next(new Error('No name given for the file'))
+    }
 
-    fs.writeFileSync(`${base}/${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer, (err) => {
+    const signatories = JSON.parse(req.body.signatories)
+
+    if (!signatories || !(signatories instanceof Array) || signatories.length <= 0 || signatories.some(s => !s.email)) {
+        return next(new Error('There must be at least one signatory in an Array'))
+    }
+
+    const configuration = await db.Configuration.create({
+        description: req.body.description,
+        showOtherSignatures: req.body.showOtherSignatures,
+        data: JSON.stringify({})
+    })
+
+    const document = await db.Document.create({
+        name: req.body.name,
+        filename: req.file.originalname,
+        ownerId: 0,
+        configurationId: configuration.getDataValue('id')
+    })
+
+    for (const signatory of signatories) {
+        await db.Signatory.create({
+            email: signatory.email,
+            documentId: document.getDataValue('id')
+        })
+    }
+
+    fs.writeFile(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer, (err) => {
         if (err) {
             next(err)
         } else {
@@ -48,7 +87,7 @@ async function uploadPdf(req, res, next) {
 
 async function deletePdf(req, res, next) {
     const name = req.params.name
-    fs.unlink(`${base}/${config.storage.filesPath}/${name}`, (err) => {
+    fs.unlink(`${config.storage.filesPath}/${name}`, (err) => {
         if (err) {
             return next(err)
         } else {

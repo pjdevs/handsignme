@@ -1,26 +1,28 @@
 <template>
-  <v-app>
-    <v-navigation-drawer v-model="drawer" elevation="1" app>
-      <v-list dense nav>
-        <router-link v-for="item in items" :key="item.title" :to="item.route">
-          <v-list-item :title="item.title" :prepend-icon="item.icon" link/>
-        </router-link>
-      </v-list>
-    </v-navigation-drawer>
-    <v-app-bar elevation="1" app shaped>
-      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>HandSignMe</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-btn variant="text" icon="mdi-dots-vertical"></v-btn>
-    </v-app-bar>
-    <v-main>
-      <v-container fill-height fluid>
-        <router-view/>
-      </v-container>
-    </v-main>
-    <v-footer app>
-    </v-footer>
-  </v-app>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <router-link to="/" class="navbar-brand" href="#"><i class="bi-file-earmark-pdf-fill" aria-hidden="true"/> HandSignMe</router-link>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarToggler">
+        <ul class="navbar-nav">
+          <li v-for="item in items" :key="item" class="nav-item mx-4 d-flex align-items-center">
+            <i class="m-2" :class="item.icon" style="color: cornflowerblue;" aria-hidden="true"/>
+            <router-link :to="item.route" :class="{ 'nav-link': true, 'active': this.$router.currentRoute.path === item.route }" aria-current="page" href="#">{{item.title}}</router-link>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="container vh-100">
+    <router-view/>
+  </div>
+  <footer class="text-lg-start bg-light text-black mt-4">
+    <div class="text-center p-3">
+      HandSignMe - 2022 - GPL 3.0
+    </div>
+  </footer>
 </template>
 
 <script>
@@ -30,20 +32,10 @@ export default {
   data () {
     return {
       items: [
-        { title: 'Home', route: '/', icon: 'mdi-home' }
-      ],
-      drawer: false
+        { title: 'Login', route: '/login', icon: 'bi-person-circle' },
+        { title: 'Subscribe', route: '/subscribe', icon: 'bi-pencil-fill' }
+      ]
     }
   }
 }
 </script>
-
-<style scoped>
-  a {
-    text-decoration: none;
-  }
-
-  a, a:visited, a:hover, a:active {
-    color: inherit;
-  }
-</style>

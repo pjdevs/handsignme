@@ -13,8 +13,8 @@ const Configuration = require('./configuration')(sequelize)
 
 // Associations
 Document.User = Document.belongsTo(User, { as: 'owner' })
-Document.Configuration = Document.hasOne(Configuration)
-Signatory.Document = Signatory.belongsTo(Document)
+Document.Configuration = Document.belongsTo(Configuration, { as: 'configuration' })
+Signatory.Document = Signatory.belongsTo(Document, { as: 'document' })
 
 // Export connection and models
 module.exports = {

@@ -1,26 +1,28 @@
 <template>
   <div class="pdf-viewer">
-    <v-row align="center" justify="center">
-      <div v-if="!loading">
-        <div>
-          <v-btn class="ma-2" elevation="0" @click="previous"><v-icon>mdi-skip-previous</v-icon></v-btn>
-          <span>{{index}} / {{numPages}}</span>
-          <v-btn class="ma-2" elevation="0" @click="next"><v-icon>mdi-skip-next</v-icon></v-btn>
-          <v-divider vertical></v-divider>
-          <v-btn class="ma-2" elevation="0" @click="unzoom"><v-icon>mdi-minus</v-icon></v-btn>
-          <span>{{Math.round(currentScale * 100) + '%'}}</span>
-          <v-btn class="ma-2" elevation="0" @click="zoom"><v-icon>mdi-plus</v-icon></v-btn>
+    <div class="col">
+      <div class="row text-center">
+        <div v-if="!loading">
+          <div>
+            <button class="btn ma-4" elevation="0" @click="previous"><i class="bi-arrow-bar-left" aria-hidden="true"/></button>
+            <span>{{index}} / {{numPages}}</span>
+            <button class="btn ma-4" elevation="0" @click="next"><i class="bi-arrow-bar-right" aria-hidden="true"/></button>
+            <div class="vr"></div>
+            <button class="btn ma-4" elevation="0" @click="unzoom"><i class="bi-dash" aria-hidden="true"/></button>
+            <span>{{Math.round(currentScale * 100) + '%'}}</span>
+            <button class="btn ma-4" elevation="0" @click="zoom"><i class="bi-plus" aria-hidden="true"/></button>
+          </div>
         </div>
       </div>
-    </v-row>
-    <v-row align="center" justify="center">
-      <div class="pdf-page-wrapper overflow-y-auto pa-2">
-        <v-sheet class="pa-2" elevation="6">
-          <canvas v-bind:class="{ invisible: loading }" ref="pdfPage"></canvas>
-          <v-progress-circular v-if="loading" color="primary" indeterminate></v-progress-circular>
-        </v-sheet>
+      <div class="row text-center">
+        <div v-if="loading" class="spinner-border" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="pdf-page-wrapper"  v-bind:class="{ 'viusally-hidden': loading }">
+            <canvas class="shadow p-3 mb-5 bg-body rounded overflow-scroll" ref="pdfPage"></canvas>
+        </div>
       </div>
-    </v-row>
+    </div>
   </div>
 </template>
 
@@ -313,9 +315,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-    .invisible {
-        display: none;
-    }
-</style>

@@ -18,6 +18,7 @@ module.exports = {
             configurationId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
+                unique: true,
                 references: {
                     model: 'Configurations',
                     key: 'id'
