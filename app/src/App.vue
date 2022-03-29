@@ -15,10 +15,18 @@
           </ul>
         </div>
       </div>
-  </nav>
-  <div class="container">
-    <router-view/>
-  </div>
+    </nav>
+    <div class="container">
+      <router-view/>
+    </div>
+      <footer class="footer-bs bg-light fixed-bottom container-fluid">
+      <div class="row justify-content-center my-4 ms-5">
+        <div class="footer-brand d-flex">
+          <h2 class="me-2"><i class="bi-file-earmark-pdf-fill"></i></h2>
+          <p class="mt-2">HandSignMe - 2022 - GPL 3.0</p>
+        </div>
+      </div>
+  </footer>
   </div>
 </template>
 

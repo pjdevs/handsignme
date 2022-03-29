@@ -44,9 +44,27 @@ async function uploadPdf(req, res, next) {
         return next(new Error('No file found in the request'))
     }
 
-    await db.Document.create({ name: 'Test', filename: req.file.originalname, ownerId: 0, configurationId: 0 })
+    if (req.body.name === undefined) {
+        return next(new Error('No named given for the file'))
+    }
 
-    fs.writeFileSync(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer, (err) => {
+    const configuration = await db.Configuration.create({
+        description: req.body.description,
+        showOtherSignatures: req.body.showOtherSignatures,
+        data: JSON.stringify({})
+    })
+
+    console.log(configuration.getDataValue('showOtherSignatures'))
+    console.log(configuration.getDataValue('id'))
+
+    await db.Document.create({
+        name: req.body.name,
+        filename: req.file.originalname,
+        ownerId: 0,
+        configurationId: configuration.getDataValue('id')
+    })
+
+    fs.writeFile(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer, (err) => {
         if (err) {
             next(err)
         } else {

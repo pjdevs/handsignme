@@ -10,6 +10,11 @@ const routes = [
     path: '/sign/:pdfId',
     name: 'sign',
     component: () => import('../views/SignView.vue')
+  },
+  {
+    path: '/upload',
+    name: 'upload',
+    component: () => import('../views/UploadView.vue')
   }
 ]
 

@@ -12,8 +12,7 @@ module.exports = {
                 type: Sequelize.JSON
             },
             description: {
-                type: Sequelize.TEXT,
-                allowNull: false
+                type: Sequelize.TEXT
             },
             showOtherSignatures: {
                 type: Sequelize.BOOLEAN,

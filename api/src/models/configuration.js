@@ -10,8 +10,7 @@ module.exports = (sequelize) => {
             allowNull: true
         },
         description: {
-            type: DataTypes.TEXT,
-            allowNull: false
+            type: DataTypes.TEXT
         },
         showOtherSignatures: {
             type: DataTypes.BOOLEAN,

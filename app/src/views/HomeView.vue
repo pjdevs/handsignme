@@ -1,6 +1,6 @@
 <template>
   <div class="home row my-4">
-    <div class="col">
+    <div class="col col-10">
       <div class="row overflow-auto">
         <div class="d-flex col mb-4" v-for="pdf of pdfList" :key="pdf.id">
           <div class="card pa-2 ma-2">
@@ -9,11 +9,10 @@
         </div>
       </div>
     </div>
-    <div class="col">
-      <form method="POST" action="/api/pdf/upload" class="d-flex" enctype="multipart/form-data">
-        <input name="file" class="form-control me-2" type="file" aria-label="File" accept="application/pdf">
-        <button class="btn btn-outline-success" type="submit">Upload</button>
-      </form>
+    <div class="col-2">
+      <router-link to="/upload">
+        <i class="bi-file-earmark-plus-fill" style="font-size: 2em;"></i>
+      </router-link>
     </div>
   </div>
 </template>
