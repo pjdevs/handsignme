@@ -1,8 +1,14 @@
+const path = require('path')
+const base = path.normalize(__dirname + '/../../')
+
+const filesPath = path.normalize(`${base}/${process.env.FILES_PATH || 'files'}`)
+const thumbnailsPath = path.normalize(`${base}/${process.env.THUMBNAILS_PATH || 'thumbnails'}`)
+
 module.exports = {
     development: {
         storage: {
-            filesPath: process.env.FILES_PATH || 'files',
-            thumbnailsPath: process.env.THUMBNAILS_PATH || 'thumbnails'
+            filesPath: filesPath,
+            thumbnailsPath: thumbnailsPath
         },
         server: {
             host: process.env.HOST || '127.0.0.1',
@@ -13,6 +19,10 @@ module.exports = {
         }
     },
     test: {
+        storage: {
+            filesPath: filesPath,
+            thumbnailsPath: thumbnailsPath
+        },
         server: {
             host: process.env.HOST || '127.0.0.1',
             port: process.env.PORT || '8000'
@@ -20,8 +30,8 @@ module.exports = {
     },
     production: {
         storage: {
-            filesPath: process.env.FILES_PATH || 'files',
-            thumbnailsPath: process.env.THUMBNAILS_PATH || 'thumbnails'
+            filesPath: filesPath,
+            thumbnailsPath: thumbnailsPath
         },
         server: {
             host: process.env.HOST || '0.0.0.0',
