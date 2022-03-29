@@ -9,7 +9,7 @@
         <div class="collapse navbar-collapse" id="navbarToggler">
           <ul class="navbar-nav">
             <li v-for="item in items" :key="item" class="nav-item mx-4 d-flex align-items-center">
-              <i class="mx-2 my-2" :class="item.icon" style="color: cornflowerblue;"></i>
+              <i class="mx-2 my-2" :class="item.icon" style="color: cornflowerblue;" aria-hidden="true"/>
               <router-link :to="item.route" :class="{ 'nav-link': true, 'active': this.$router.currentRoute.path === item.route }" aria-current="page" href="#">{{item.title}}</router-link>
             </li>
           </ul>
@@ -22,7 +22,7 @@
       <footer class="footer-bs bg-light fixed-bottom container-fluid">
       <div class="row justify-content-center my-4 ms-5">
         <div class="footer-brand d-flex">
-          <h2 class="me-2"><i class="bi-file-earmark-pdf-fill"></i></h2>
+          <h2 class="me-2"><i class="bi-file-earmark-pdf-fill" aria-hidden="true"/></h2>
           <p class="mt-2">HandSignMe - 2022 - GPL 3.0</p>
         </div>
       </div>

@@ -4,13 +4,13 @@
       <div class="row text-center">
         <div v-if="!loading">
           <div>
-            <button class="btn ma-4" elevation="0" @click="previous"><i class="bi-arrow-bar-left"></i></button>
+            <button class="btn ma-4" elevation="0" @click="previous"><i class="bi-arrow-bar-left" aria-hidden="true"/></button>
             <span>{{index}} / {{numPages}}</span>
-            <button class="btn ma-4" elevation="0" @click="next"><i class="bi-arrow-bar-right"></i></button>
+            <button class="btn ma-4" elevation="0" @click="next"><i class="bi-arrow-bar-right" aria-hidden="true"/></button>
             <div class="vr"></div>
-            <button class="btn ma-4" elevation="0" @click="unzoom"><i class="bi-dash"></i></button>
+            <button class="btn ma-4" elevation="0" @click="unzoom"><i class="bi-dash" aria-hidden="true"/></button>
             <span>{{Math.round(currentScale * 100) + '%'}}</span>
-            <button class="btn ma-4" elevation="0" @click="zoom"><i class="bi-plus"></i></button>
+            <button class="btn ma-4" elevation="0" @click="zoom"><i class="bi-plus" aria-hidden="true"/></button>
           </div>
         </div>
       </div>
