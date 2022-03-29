@@ -32,7 +32,7 @@
             <label for="signatoryEmail">Signatories</label>
             <div class="input-group mb-3">
               <input type="email" class="form-control" ref="signatoryEmail" id="signatoryEmail" placeholder="Add a signatory (signatory@mail.com)" aria-label="New signatory e-mail" @change="checkValidSignatories">
-              <button class="btn btn-outline-secondary" @click="addSignatory" type="button"><i class="bi-envelope-plus"></i></button>
+              <button class="btn btn-outline-secondary" @click="addSignatory" type="button"><i class="bi-envelope-plus" aria-hidden="true"/></button>
             </div>
           </div>
           <div>
@@ -41,7 +41,7 @@
                 <input class="form-control" type="email" readonly :value="signatory.email">
               </div>
               <div class="col-1">
-                <button class="btn btn-outline-secondary" type="button" @click="removeSignatory(index)"><i class="bi-trash"/></button>
+                <button class="btn btn-outline-secondary" type="button" @click="removeSignatory(index)"><i class="bi-trash" aria-hidden="true"/></button>
               </div>
             </div>
           </div>
