@@ -11,7 +11,7 @@
     </div>
     <div class="col-2">
       <router-link to="/upload">
-        <i class="bi-file-earmark-plus-fill" style="font-size: 2em;"></i>
+        <i class="bi-file-earmark-plus-fill" style="font-size: 2em;" aria-hidden="true"/>
       </router-link>
     </div>
   </div>
