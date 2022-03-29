@@ -40,12 +40,18 @@ async function getPdfById(req, res, next) {
 }
 
 async function uploadPdf(req, res, next) {
-    if (req.file === undefined) {
+    if (!req.file) {
         return next(new Error('No file found in the request'))
     }
 
-    if (req.body.name === undefined) {
-        return next(new Error('No named given for the file'))
+    if (!req.body.name) {
+        return next(new Error('No name given for the file'))
+    }
+
+    const signatories = JSON.parse(req.body.signatories)
+
+    if (!signatories || !(signatories instanceof Array) || signatories.length <= 0 || signatories.some(s => !s.email)) {
+        return next(new Error('There must be at least one signatory in an Array'))
     }
 
     const configuration = await db.Configuration.create({
@@ -54,15 +60,19 @@ async function uploadPdf(req, res, next) {
         data: JSON.stringify({})
     })
 
-    console.log(configuration.getDataValue('showOtherSignatures'))
-    console.log(configuration.getDataValue('id'))
-
-    await db.Document.create({
+    const document = await db.Document.create({
         name: req.body.name,
         filename: req.file.originalname,
         ownerId: 0,
         configurationId: configuration.getDataValue('id')
     })
+
+    for (const signatory of signatories) {
+        await db.Signatory.create({
+            email: signatory.email,
+            documentId: document.getDataValue('id')
+        })
+    }
 
     fs.writeFile(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer, (err) => {
         if (err) {
