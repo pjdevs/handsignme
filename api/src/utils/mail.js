@@ -4,8 +4,12 @@ const config = require(__dirname + '/../config/nodemailer.json')[env]
 
 const transporter = nodemailer.createTransport(config)
 
+function nameFromMail(email) {
+    return email.split('@')[0].split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ')
+}
+
 async function sendInvitationMail(sender, signatories, document, configuration, link) {
-    const senderName = sender.email.split('@')[0]
+    const senderName = nameFromMail(sender.email)
 
     return transporter.sendMail({
         from: '"HandSignMe" <noreply@handsignme.com>',
@@ -17,5 +21,6 @@ async function sendInvitationMail(sender, signatories, document, configuration, 
 }
 
 module.exports = {
-    sendInvitationMail: sendInvitationMail
+    sendInvitationMail: sendInvitationMail,
+    nameFromMail: nameFromMail
 }
