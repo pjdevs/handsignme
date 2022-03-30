@@ -5,11 +5,9 @@ const config = require('../config')
 function hashFile(filename) {
     try {
         const buffer = fs.readFileSync(`${config.storage.filesPath}/${filename}`)
-
         const md5Hasher = crypto.createHash('md5')
-        const hash = md5Hasher.update(buffer).digest('hex')
 
-        return hash
+        return md5Hasher.update(buffer).digest('hex')
     } catch (err) {
         return ''
     }
