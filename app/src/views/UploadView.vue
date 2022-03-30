@@ -123,7 +123,7 @@ export default {
           this.$router.push('/')
         })
         .catch(err => {
-          console.log(err)
+          console.log(err.response.data)
         })
         .then(() => {
           this.submiting = false

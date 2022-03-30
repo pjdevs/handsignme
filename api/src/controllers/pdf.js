@@ -54,35 +54,35 @@ async function uploadPdf(req, res, next) {
         return next(new Error('There must be at least one signatory in an Array'))
     }
 
-    const configuration = await db.Configuration.create({
-        description: req.body.description,
-        showOtherSignatures: req.body.showOtherSignatures,
-        data: JSON.stringify({})
-    })
-
-    const document = await db.Document.create({
-        name: req.body.name,
-        filename: req.file.originalname,
-        ownerId: 0,
-        configurationId: configuration.getDataValue('id')
-    })
-
-    for (const signatory of signatories) {
-        await db.Signatory.create({
-            email: signatory.email,
-            documentId: document.getDataValue('id')
+    try {
+        const configuration = await db.Configuration.create({
+            description: req.body.description,
+            showOtherSignatures: req.body.showOtherSignatures,
+            data: JSON.stringify({})
         })
-    }
 
-    fs.writeFile(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer, (err) => {
-        if (err) {
-            next(err)
-        } else {
-            res.json({
-                msg: 'success'
+        const document = await db.Document.create({
+            name: req.body.name,
+            filename: req.file.originalname,
+            ownerId: 0,
+            configurationId: configuration.getDataValue('id')
+        })
+
+        for (const signatory of signatories) {
+            await db.Signatory.create({
+                email: signatory.email,
+                documentId: document.getDataValue('id')
             })
         }
-    })
+
+        fs.writeFileSync(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer)
+
+        res.json({
+            msg: 'success'
+        })
+    } catch (err) {
+        next(err)
+    }
 }
 
 async function deletePdf(req, res, next) {

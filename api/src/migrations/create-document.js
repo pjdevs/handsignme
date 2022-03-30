@@ -15,6 +15,11 @@ module.exports = {
                 allowNull: false,
                 type: Sequelize.STRING
             },
+            hash: {
+                type: Sequelize.STRING(32),
+                allowNull: false,
+                unique: true
+            },
             configurationId: {
                 type: Sequelize.INTEGER,
                 allowNull: false,
