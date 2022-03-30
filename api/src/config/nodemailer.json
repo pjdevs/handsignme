@@ -1,0 +1,17 @@
+{
+    "development": {
+        "host": "localhost",
+        "port": 1025,
+        "secure": false
+    },
+    "test": {
+        "host": "localhost",
+        "port": 1025,
+        "secure": false
+    },
+    "production": {
+        "host": "localhost",
+        "port": 1025,
+        "secure": false
+    }
+}

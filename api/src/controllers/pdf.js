@@ -1,6 +1,6 @@
-const fs = require('fs')
-const config = require('../config')
 const db = require('../models')
+const { filePath, saveFile, removeFile } = require('../utils/file-storage')
+const { sendInvitationMail } = require('../utils/mail')
 const { ensureThumbnail } = require('../utils/thumbnail')
 
 async function getPdfList(req, res) {
@@ -36,7 +36,7 @@ async function getPdfById(req, res, next) {
         return next(new Error(`Cannot found PDF with id ${req.params.id}`))
     }
 
-    res.download(`${config.storage.filesPath}/${pdf.filename}`, pdf.filename)
+    res.download(filePath(pdf.filename), pdf.filename)
 }
 
 async function uploadPdf(req, res, next) {
@@ -48,53 +48,100 @@ async function uploadPdf(req, res, next) {
         return next(new Error('No name given for the file'))
     }
 
-    const signatories = JSON.parse(req.body.signatories)
+    const owner = await db.User.findByPk(0)
+    const signatoriesData = JSON.parse(req.body.signatories)
+    let configuration = undefined
+    let document = undefined
+    let signatories = []
 
-    if (!signatories || !(signatories instanceof Array) || signatories.length <= 0 || signatories.some(s => !s.email)) {
-        return next(new Error('There must be at least one signatory in an Array'))
+    if (!signatoriesData || !(signatoriesData instanceof Array) || signatoriesData.length <= 0 || signatoriesData.some(s => !s.email)) {
+        return next(new Error('There must be at least one signatory in an array of object with an email field'))
+    }
+
+    const cleanup = async () => {
+        for (const signatory of signatories) {
+            await signatory.destroy()
+        }
+        await document?.destroy()
+        await configuration?.destroy()
     }
 
     try {
-        const configuration = await db.Configuration.create({
+        configuration = await db.Configuration.create({
             description: req.body.description,
             showOtherSignatures: req.body.showOtherSignatures,
             data: JSON.stringify({})
         })
+    } catch (err) {
+        await cleanup()
+        return next(new Error(`Cannot create a new configuration from given data : ${err.message}`))
+    }
 
-        const document = await db.Document.create({
+    try {
+        saveFile(req.file.originalname, req.file.buffer)
+    } catch (err) {
+        await cleanup()
+        return next(new Error(`Cannot save file ${req.file.originalname} : ${err.message}`))
+    }
+
+    try {
+        document = await db.Document.create({
             name: req.body.name,
             filename: req.file.originalname,
-            ownerId: 0,
+            ownerId: owner.getDataValue('id'),
             configurationId: configuration.getDataValue('id')
         })
+    } catch (err) {
+        console.log(err)
+        await cleanup()
+        return next(new Error(`Cannot create a new document with given data : ${err.message}`))
+    }
 
-        for (const signatory of signatories) {
-            await db.Signatory.create({
+    for (const signatory of signatoriesData) {
+        try {
+            const createdSignatory = await db.Signatory.create({
                 email: signatory.email,
                 documentId: document.getDataValue('id')
             })
+            signatories.push(createdSignatory)
+        } catch (err) {
+            await cleanup()
+            return next(new Error(`Cannot create a new signatory with mail ${signatory.email} : ${err.message}`))
         }
-
-        fs.writeFileSync(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer)
-
-        res.json({
-            msg: 'success'
-        })
-    } catch (err) {
-        next(err)
     }
+
+    try {
+        await sendInvitationMail(owner, signatoriesData, document, configuration, '#')
+    } catch (err) {
+        await cleanup()
+        return next(new Error(`Cannot send an email invitation to a signatory : ${err.message}`))
+    }
+
+    res.json({
+        msg: 'success'
+    })
 }
 
 async function deletePdf(req, res, next) {
-    const name = req.params.name
-    fs.unlink(`${config.storage.filesPath}/${name}`, (err) => {
-        if (err) {
-            return next(err)
-        } else {
-            res.json({
-                msg: 'success'
-            })
-        }
+    const document = await db.Document.findByPk(req.params.id)
+
+    if (!document) {
+        return next(new Error(`Cannot find a PDF with id ${req.params.id}`))
+    }
+
+    const configuration = (await db.Configuration.findByPk(document.configurationId))
+
+    try {
+        removeFile(document.filename)
+    } catch (err) {
+        return next(new Error(`Cannot remove the file : ${err.message}`))
+    }
+
+    await document.destroy()
+    await configuration.destroy()
+
+    res.json({
+        msg: 'success'
     })
 }
 
