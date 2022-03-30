@@ -1,6 +1,7 @@
 const fs = require('fs')
 const config = require('../config')
 const db = require('../models')
+const { sendInvitationMail } = require('../utils/mail')
 const { ensureThumbnail } = require('../utils/thumbnail')
 
 async function getPdfList(req, res) {
@@ -48,6 +49,7 @@ async function uploadPdf(req, res, next) {
         return next(new Error('No name given for the file'))
     }
 
+    const owner = await db.User.findByPk(0)
     const signatories = JSON.parse(req.body.signatories)
 
     if (!signatories || !(signatories instanceof Array) || signatories.length <= 0 || signatories.some(s => !s.email)) {
@@ -61,10 +63,12 @@ async function uploadPdf(req, res, next) {
             data: JSON.stringify({})
         })
 
+        fs.writeFileSync(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer)
+
         const document = await db.Document.create({
             name: req.body.name,
             filename: req.file.originalname,
-            ownerId: 0,
+            ownerId: owner.getDataValue('id'),
             configurationId: configuration.getDataValue('id')
         })
 
@@ -75,12 +79,14 @@ async function uploadPdf(req, res, next) {
             })
         }
 
-        fs.writeFileSync(`${config.storage.filesPath}/${req.file.originalname}`, req.file.buffer)
+        await ensureThumbnail(document.filename)
+        await sendInvitationMail(owner, signatories, document, configuration, '#')
 
         res.json({
             msg: 'success'
         })
     } catch (err) {
+        console.log(err)
         next(err)
     }
 }
