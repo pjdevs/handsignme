@@ -1,4 +1,3 @@
-const { passport } = require('../middlewares/passport')
 const bcrypt = require('bcrypt')
 const db = require('../models')
 
@@ -8,11 +7,11 @@ module.exports.signup = (req, res, next) => {
     const password2 = req.body.password2
 
     if (!email || !password || !password2) {
-        res.json({ msg: 'not ok' })
+        return next(new Error('Wrong credentials'))
     }
 
     if (password !== password2) {
-        res.json({ msg: 'password not eq' })
+        next(new Error('Passwords do not match'))
     } else {
         const salt = bcrypt.genSaltSync(10)
         const hashedPassword = bcrypt.hashSync(password, salt)
@@ -25,17 +24,23 @@ module.exports.signup = (req, res, next) => {
 
         db.User.create(newUser)
             .then(() => {
-                res.redirect('/')
+                res.json({ msg: 'success' })
             }).catch(function (error) {
                 next(error)
             })
     }
 }
 
-module.exports.login = passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/failure'
-})
+module.exports.login = (req, res, next) => {
+    req.login(req.user, (err) => {
+        if (err) {
+            err.status = 401
+            next(err)
+        } else {
+            res.json({ msg: 'success' })
+        }
+    })
+}
 
 module.exports.logout = (req, res) => {
     req.logout()

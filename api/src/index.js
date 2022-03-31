@@ -3,7 +3,7 @@ const cookieParser = require('cookie-parser')
 const session = require('express-session')
 const routes = require('./routes')
 const config = require('./config')
-const { setupPassport } = require('./middlewares/passport')
+const passport = require('./middlewares/passport')
 const bodyParser = require('./middlewares/bodyParser')
 
 const app = express()
@@ -13,8 +13,8 @@ app.use(cookieParser())
 app.use(bodyParser.json)
 app.use(bodyParser.urlencoded)
 app.use(session({ secret: '4564f6s4fdsfdfd', resave: false, saveUninitialized: false }))
-
-setupPassport(app)
+app.use(passport.initialize())
+app.use(passport.session())
 
 app.use('/api', routes)
 
