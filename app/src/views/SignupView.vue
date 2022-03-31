@@ -21,9 +21,6 @@
 <script>
 
 export default {
-  name: 'SignupView',
-  data () {
-
-  }
+  name: 'SignupView'
 }
 </script>

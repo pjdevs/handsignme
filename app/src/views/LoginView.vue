@@ -21,9 +21,6 @@
 <script>
 
 export default {
-  name: 'LoginView',
-  data () {
-
-  }
+  name: 'LoginView'
 }
 </script>
