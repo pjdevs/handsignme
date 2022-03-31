@@ -14,6 +14,13 @@ module.exports = {
                     isEmail: true
                 },
                 unique: true
+            },
+            password: {
+                type: Sequelize.STRING,
+                allowNull: false
+            },
+            salt: {
+                type: Sequelize.STRING
             }
         })
     },
