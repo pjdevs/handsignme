@@ -17,7 +17,7 @@ describe('PDF Controller', () => {
             ]
 
             await db.sequelize.sync({ force: true })
-            await db.User.create({ id: 0, email: 'test@mail.com' })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
             await db.Configuration.create({ id: 0, email: 'test2@mail.com', description: 'A document', showOtherSignatures: false })
             await db.Document.create(myFiles[0])
             await pdf.getPdfList(req, res)
