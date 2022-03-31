@@ -1,8 +1,10 @@
 const router = require('express').Router()
 const pdf = require('./pdf')
+const auth = require('./auth')
 
 router
     .use('/pdf', pdf)
+    .use('/auth', auth)
     .use((req, res) => {
         res.status(404).json({
             error: {
