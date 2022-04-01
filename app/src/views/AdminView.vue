@@ -26,6 +26,7 @@
     </nav>
 
     <table class="table">
+      <caption>{{mode == 'userList' ? 'Complete user list' : 'Complete document list'}}</caption>
       <thead v-if="mode == 'userlist'">
         <tr>
           <th scope="col">#</th>
