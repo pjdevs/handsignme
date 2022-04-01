@@ -11,7 +11,7 @@ router
     .use((req, res) => {
         res.status(404).json({
             error: {
-                message: `${req.url} not found`
+                msg: `${req.url} not found`
             }
         })
     })

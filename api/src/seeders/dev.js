@@ -7,7 +7,8 @@ module.exports = {
                 id: 0,
                 email: 'test@mail.com',
                 password: '$2b$10$8bA0qkhDuMacZ8/PQbsmkuMiOCCRRW1SV1k0RkuJUXyuOHHtTPerW', // = 'test'
-                salt: '$2b$10$8bA0qkhDuMacZ8/PQbsmku'
+                salt: '$2b$10$8bA0qkhDuMacZ8/PQbsmku',
+                isAdmin: true
             }
         ])
 

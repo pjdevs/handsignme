@@ -40,13 +40,13 @@
         </tr>
       </thead>
       <tbody v-if="mode == 'userlist'">
-        <tr :key="user.id" v-for="user of users">
+        <tr v-for="user of users"  :key="user.id">
           <th scope="row">{{ user.id }}</th>
           <td>{{ user.email }}</td>
         </tr>
       </tbody>
       <tbody v-if="mode == 'doclist'">
-        <tr :key="doc.id" v-for="doc of docs">
+        <tr v-for="doc of docs" :key="doc.id">
           <th scope="row">{{ doc.id }}</th>
           <td>{{ doc.name }}</td>
           <td>{{ doc.ownerId }}</td>
@@ -64,8 +64,8 @@ export default {
   name: 'AdminView',
   data () {
     return {
-      users: null,
-      docs: null,
+      users: [],
+      docs: [],
       mode: 'userlist'
     }
   },
@@ -78,15 +78,16 @@ export default {
     }
   },
   mounted () {
+    const vm = this
+
     http.get('/api/admin/user/all')
       .then((res) => {
-        this.users = res.data.userList
+        vm.users = res.data
       })
       .catch(error => console.error(`There was an error retrieving the user list: ${error}`))
     http.get('/api/admin/file/all')
       .then((res) => {
-        this.docs = res.data.docList
-        console.log(this.docs)
+        vm.docs = res.data
       })
       .catch(error => console.error(`There was an error retrieving the pdf list: ${error}`))
   }
