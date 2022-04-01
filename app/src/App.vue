@@ -33,7 +33,7 @@ export default {
     return {
       items: [
         { title: 'Login', route: '/login', icon: 'bi-person-circle' },
-        { title: 'Subscribe', route: '/subscribe', icon: 'bi-pencil-fill' }
+        { title: 'Signup', route: '/signup', icon: 'bi-pencil-fill' }
       ]
     }
   }

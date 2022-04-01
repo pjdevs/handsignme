@@ -21,6 +21,10 @@ module.exports = {
             },
             salt: {
                 type: Sequelize.STRING
+            },
+            isAdmin: {
+                type: Sequelize.BOOLEAN,
+                allowNull: false
             }
         })
     },
