@@ -1,42 +1,60 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { isAuthenticated } from '@/auth'
+import { useAuthStore } from '@/stores/auth'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('../views/HomeView.vue'),
-    beforeEnter: checkAuth
+    components: {
+      default: () => import('@/views/HomeView.vue'),
+      Navbar: () => import('@/components/LoggedNavbar.vue')
+    },
+    meta: { requiresAuth: true }
   },
   {
     path: '/sign/:pdfId',
     name: 'sign',
-    component: () => import('../views/SignView.vue'),
-    beforeEnter: checkAuth
+    components: {
+      default: () => import('@/views/SignView.vue'),
+      Navbar: () => import('@/components/LoginNavbar.vue')
+    },
+    meta: { requiresAuth: true }
   },
   {
     path: '/upload',
     name: 'upload',
-    component: () => import('../views/UploadView.vue'),
-    beforeEnter: checkAuth
+    components: {
+      default: () => import('@/views/UploadView.vue'),
+      Navbar: () => import('@/components/LoggedNavbar.vue')
+    },
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
     name: 'login',
-    component: () => import('../views/LoginView.vue'),
-    beforeEnter: checkAuth
+    components: {
+      default: () => import('@/views/LoginView.vue'),
+      Navbar: () => import('@/components/LoginNavbar.vue')
+    },
+    meta: { requiresAuth: false, onlyUnauth: true }
   },
   {
     path: '/signup',
     name: 'signup',
-    component: () => import('../views/SignupView.vue'),
-    beforeEnter: checkAuth
+    components: {
+      default: () => import('@/views/SignupView.vue'),
+      Navbar: () => import('@/components/LoginNavbar.vue')
+    },
+    meta: { requiresAuth: false, onlyUnauth: true }
   },
   {
     path: '/admin',
     name: 'admin',
-    component: () => import('../views/AdminView.vue'),
-    beforeEnter: checkAuth
+    components: {
+      default: () => import('@/views/AdminView.vue'),
+      Navbar: () => import('@/components/LoggedNavbar.vue')
+    },
+    meta: { requiresAuth: true }
   }
 ]
 
@@ -45,13 +63,17 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from) => {
-  const auth = isAuthenticated()
+router.beforeEach(async (to, from) => {
+  const auth = useAuthStore()
+  const isAuth = await auth.verify()
 
-  if (auth && (to.path === '/login' || to.path === '/signup')) {
-    return '/'
-  } else if (to.path !== '/login' && to.path !== '/signup' && !auth) {
-    return '/login'
+  if (to.meta.requiresAuth && !isAuth) {
+    return {
+      path: '/login',
+      query: { redirect: to.fullPath }
+    }
+  } else if (to.meta.onlyUnauth && isAuth) {
+    return from
   }
 })
 

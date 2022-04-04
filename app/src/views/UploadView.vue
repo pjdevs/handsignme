@@ -1,6 +1,10 @@
 <template>
   <div class="upload my-4">
     <form method="POST" ref="upload" action="/api/pdf/upload" enctype="multipart/form-data">
+      <h2 class="form-signin-heading">Document informations</h2>
+      <div v-if="err" class="alert alert-danger">
+        {{err}}
+      </div>
       <div class="row mb-4">
         <div class="col mt-2">
           <div class="form-floating align-middle">
@@ -65,7 +69,8 @@ export default {
     return {
       signatories: [
       ],
-      submiting: false
+      submiting: false,
+      err: undefined
     }
   },
   watch: {
@@ -116,14 +121,14 @@ export default {
       const req = http.post('/api/pdf/upload', data)
 
       this.submiting = true
+      const vm = this
 
       req
         .then(res => {
-          console.log('Response status is ' + res.status)
           this.$router.push('/')
         })
         .catch(err => {
-          console.log(err.response.data)
+          vm.err = err.response.data.error.msg
         })
         .then(() => {
           this.submiting = false

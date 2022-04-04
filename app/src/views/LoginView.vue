@@ -1,13 +1,11 @@
 <template>
 
 <div class="container">
-  <form class="form-signin" @submit.prevent="login">
+  <form ref="loginForm" class="form-signin" @submit.prevent="login">
     <h2 class="form-signin-heading">Please log in</h2>
-    <v-if key="errorMessage">
-        <div class="alert alert-danger">
-            {{errorMessage}}
-        </div>
-    </v-if>
+    <div v-if="err" class="alert alert-danger">
+        {{err}}
+    </div>
     <label for="inputUsername" class="sr-only">Email</label>
     <input v-model="email" type="text" id="inputUsername" name="email" class="form-control" placeholder="Email" required autofocus>
     <label for="inputPassword" class="sr-only">Password</label>
@@ -20,25 +18,29 @@
 
 <script>
 import http from '@/http-common'
-import { authenticate } from '@/auth'
 
 export default {
   name: 'LoginView',
   data () {
     return {
       email: '',
-      password: ''
+      password: '',
+      err: undefined
     }
   },
   methods: {
     login () {
-      http.post('/api/auth/login')
+      const vm = this
+
+      http.post('/api/auth/login', new URLSearchParams({
+        email: vm.email,
+        password: vm.password
+      }))
         .then(res => {
-          authenticate()
-          this.$router.push('/')
+          vm.$router.push(this.$route.query.redirect || '/')
         })
         .catch(err => {
-          alert(err.msg)
+          vm.err = err.response.data
         })
     }
   }
