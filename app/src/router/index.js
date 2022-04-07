@@ -4,48 +4,59 @@ import { useAuthStore } from '@/stores/auth'
 const onlyAuth = { requiresAuth: true }
 const onlyNonAuth = { onlyNonAuth: true }
 
-function importComponents (main, navbar) {
-  return {
-    default: () => import(main),
-    Navbar: () => import(navbar)
-  }
-}
-
 const routes = [
   {
     path: '/',
     name: 'home',
-    components: importComponents('@/views/HomeView.vue', '@/components/LoggedNavbar.vue'),
+    components: {
+      default: () => import('@/views/HomeView.vue'),
+      Navbar: () => import('@/components/LoggedNavbar.vue')
+    },
     meta: onlyAuth
   },
   {
     path: '/sign/:pdfId',
     name: 'sign',
-    components: importComponents('@/views/SignView.vue', '@/components/LoginNavbar.vue'),
+    components: {
+      default: () => import('@/views/SignView.vue'),
+      Navbar: () => import('@/components/LoginNavbar.vue')
+    },
     meta: onlyAuth
   },
   {
     path: '/upload',
     name: 'upload',
-    components: importComponents('@/views/UploadView.vue', '@/components/LoggedNavbar.vue'),
+    components: {
+      default: () => import('@/views/UploadView.vue'),
+      Navbar: () => import('@/components/LoggedNavbar.vue')
+    },
     meta: onlyAuth
   },
   {
     path: '/login',
     name: 'login',
-    components: importComponents('@/views/LoginView.vue', '@/components/LoginNavbar.vue'),
+    components: {
+      default: () => import('@/views/LoginView.vue'),
+      Navbar: () => import('@/components/LoginNavbar.vue')
+    },
     meta: onlyNonAuth
   },
   {
     path: '/signup',
     name: 'signup',
-    components: importComponents('@/views/SignupView.vue', '@/components/LoginNavbar.vue'),
+    components: {
+      default: () => import('@/views/SignupView.vue'),
+      Navbar: () => import('@/components/LoginNavbar.vue')
+    },
     meta: onlyNonAuth
   },
   {
     path: '/admin',
     name: 'admin',
-    components: importComponents('@/views/AdminView.vue', '@/components/LoggedNavbar.vue'),
+    components: {
+      default: () => import('@/views/AdminView.vue'),
+      Navbar: () => import('@/components/LoggedNavbar.vue')
+    },
     meta: onlyNonAuth
   }
 ]
