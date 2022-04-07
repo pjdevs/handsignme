@@ -7,7 +7,7 @@ async function getPdfList(req, res) {
     const pdfList = await db.Document.findAll({
         attributes: ['id', 'name'],
         where: {
-            ownerId: 0
+            ownerId: req.user.id
         }
     })
 

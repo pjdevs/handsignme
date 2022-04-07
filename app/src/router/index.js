@@ -4,13 +4,16 @@ import { useAuthStore } from '@/stores/auth'
 const onlyAuth = { requiresAuth: true }
 const onlyNonAuth = { onlyNonAuth: true }
 
+const loggedNavbar = () => import('@/components/LoggedNavbar.vue')
+const loginNavbar = () => import('@/components/LoginNavbar.vue')
+
 const routes = [
   {
     path: '/',
     name: 'home',
     components: {
       default: () => import('@/views/HomeView.vue'),
-      Navbar: () => import('@/components/LoggedNavbar.vue')
+      Navbar: loggedNavbar
     },
     meta: onlyAuth
   },
@@ -19,7 +22,7 @@ const routes = [
     name: 'sign',
     components: {
       default: () => import('@/views/SignView.vue'),
-      Navbar: () => import('@/components/LoginNavbar.vue')
+      Navbar: loginNavbar
     },
     meta: onlyAuth
   },
@@ -28,7 +31,7 @@ const routes = [
     name: 'upload',
     components: {
       default: () => import('@/views/UploadView.vue'),
-      Navbar: () => import('@/components/LoggedNavbar.vue')
+      Navbar: loggedNavbar
     },
     meta: onlyAuth
   },
@@ -37,7 +40,7 @@ const routes = [
     name: 'login',
     components: {
       default: () => import('@/views/LoginView.vue'),
-      Navbar: () => import('@/components/LoginNavbar.vue')
+      Navbar: loginNavbar
     },
     meta: onlyNonAuth
   },
@@ -46,7 +49,7 @@ const routes = [
     name: 'signup',
     components: {
       default: () => import('@/views/SignupView.vue'),
-      Navbar: () => import('@/components/LoginNavbar.vue')
+      Navbar: loginNavbar
     },
     meta: onlyNonAuth
   },
@@ -55,7 +58,7 @@ const routes = [
     name: 'admin',
     components: {
       default: () => import('@/views/AdminView.vue'),
-      Navbar: () => import('@/components/LoggedNavbar.vue')
+      Navbar: loggedNavbar
     },
     meta: onlyNonAuth
   }
