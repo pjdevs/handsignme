@@ -7,7 +7,7 @@ async function getPdfList(req, res) {
     const pdfList = await db.Document.findAll({
         attributes: ['id', 'name'],
         where: {
-            ownerId: 0
+            ownerId: req.user.id
         }
     })
 
@@ -92,7 +92,6 @@ async function uploadPdf(req, res, next) {
             configurationId: configuration.getDataValue('id')
         })
     } catch (err) {
-        console.log(err)
         await cleanup()
         return next(new Error(`Cannot create a new document with given data : ${err.message}`))
     }

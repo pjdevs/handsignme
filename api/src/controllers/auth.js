@@ -44,5 +44,5 @@ module.exports.login = (req, res, next) => {
 
 module.exports.logout = (req, res) => {
     req.logout()
-    res.redirect('/')
+    res.json({ msg: 'success' })
 }

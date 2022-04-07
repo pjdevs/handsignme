@@ -8,7 +8,6 @@ passport.use(new LocalStrategy({
     passwordField: 'password'
 },
 (email, password, done) => {
-    console.log(email, password)
     db.User.findOne({
         where: {
             email: email
