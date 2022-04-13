@@ -18,7 +18,7 @@
         <div v-if="loading" class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
-        <div class="pdf-page-wrapper"  v-bind:class="{ 'viusally-hidden': loading }">
+        <div class="pdf-page-wrapper"  v-bind:class="{ 'visually-hidden': loading }">
             <canvas class="shadow p-3 mb-5 bg-body rounded overflow-scroll" ref="pdfPage"></canvas>
         </div>
       </div>
@@ -41,7 +41,7 @@ export default {
   },
   props: {
     src: {
-      type: String,
+      type: Object,
       required: true
     },
     page: {

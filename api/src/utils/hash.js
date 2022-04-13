@@ -14,26 +14,16 @@ function hashFile(filename) {
 }
 
 function hashToken(user, signatory, document, number) {
-    try {
-        const userId = user.id
-        const userMail = user.mail
-        const signatoryId = signatory.id
-        const signatoryMail = signatory.mail
-        const documentId = document.id
+    const hashToken = crypto.createHash('md5')
 
-        const hashToken = crypto.createHash('md5')
-
-        return hashToken
-            .update(userId.toString())
-            .update(userMail.toString())
-            .update(signatoryId.toString())
-            .update(signatoryMail.toString())
-            .update(documentId.toString())
-            .update(number === undefined ? crypto.randomBytes(100).toString() : number.toString())
-            .digest('hex')
-    } catch (err) {
-        return err.toString()
-    }
+    return hashToken
+        .update(user.id.toString())
+        .update(user.email.toString())
+        .update(signatory.id.toString())
+        .update(signatory.email.toString())
+        .update(document.id.toString())
+        .update(number ? number.toString() : crypto.randomBytes(8).toString('hex'))
+        .digest('hex')
 }
 
 module.exports = {

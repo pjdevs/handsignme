@@ -17,7 +17,7 @@ async function getPdfList(req, res) {
 async function getPdfThumbnailById(req, res, next) {
     const pdf = await db.Document.findByPk(req.params.id)
 
-    if (pdf === null) {
+    if (pdf === null || pdf.ownerId !== req.user.id) {
         return next(new Error(`Cannot found PDF with id ${req.params.id}`))
     }
 
@@ -32,8 +32,33 @@ async function getPdfThumbnailById(req, res, next) {
 async function getPdfById(req, res, next) {
     const pdf = await db.Document.findByPk(req.params.id)
 
-    if (pdf === null) {
+    if (pdf === null || pdf.ownerId !== req.user.id) {
         return next(new Error(`Cannot found PDF with id ${req.params.id}`))
+    }
+
+    res.download(filePath(pdf.filename), pdf.filename)
+}
+
+async function getPdfByToken(req, res, next) {
+    const pdf = await db.Document.findByPk(req.signatory.documentId)
+
+    if (pdf === null) {
+        next(new Error('No document was found'))
+    }
+
+    res.download(filePath(pdf.filename), pdf.filename)
+}
+
+async function getPdfInfoByToken(req, res, next) {
+    const pdf = await db.Document.findByPk(req.signatory.documentId, {
+        include: [
+            db.Document.User,
+            db.Document.Configuration
+        ]
+    })
+
+    if (pdf === null) {
+        return next(new Error('Cannot found PDF for you'))
     }
 
     res.download(filePath(pdf.filename), pdf.filename)
@@ -110,7 +135,7 @@ async function uploadPdf(req, res, next) {
     }
 
     try {
-        await sendInvitationMail(owner, signatoriesData, document, configuration, '#')
+        await sendInvitationMail(owner, signatories, document, configuration, `${req.hostname}/app/sign`)
     } catch (err) {
         await cleanup()
         return next(new Error(`Cannot send an email invitation to a signatory : ${err.message}`))
@@ -146,6 +171,8 @@ async function deletePdf(req, res, next) {
 
 module.exports = {
     getPdfById,
+    getPdfByToken,
+    getPdfInfoByToken,
     getPdfList,
     getPdfThumbnailById,
     uploadPdf,

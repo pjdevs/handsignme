@@ -25,6 +25,10 @@ module.exports = {
                     model: 'Documents',
                     key: 'id'
                 }
+            },
+            token: {
+                type: Sequelize.STRING(32),
+                unique: true
             }
         })
     },

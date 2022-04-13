@@ -15,8 +15,7 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         hash: {
-            type: DataTypes.STRING(32),
-            unique: true
+            type: DataTypes.STRING(32)
         },
         configurationId: {
             type: DataTypes.INTEGER,

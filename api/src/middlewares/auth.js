@@ -1,3 +1,5 @@
+const db = require('../models')
+
 module.exports.isAuthenticated = (req, res, next) => {
     if (req.isAuthenticated()) {
         return next()
@@ -18,4 +20,21 @@ module.exports.isAdmin = (req, res, next) => {
     err.status = 401
 
     return next(err)
+}
+
+module.exports.isSignatory = async (req, res, next) => {
+    const signatory = await db.Signatory.findOne({
+        where: {
+            token: req.header('Authorization') || ''
+        }
+    })
+
+    if (signatory === null) {
+        const err = new Error('Token is invalid')
+        err.status = 401
+        next(err)
+    } else {
+        req.signatory = signatory
+        next()
+    }
 }
