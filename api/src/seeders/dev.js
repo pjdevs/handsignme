@@ -29,7 +29,8 @@ module.exports = {
             {
                 id: 0,
                 name: 'Cahier des charges',
-                filename: 'CDC_HSM_v2.pdf',
+                originalName: 'CDC_HSM_v2.pdf',
+                filename: '0_CDC_HSM_v2.pdf',
                 hash: '6004fc053f2ae597928f2d9cc6c052b6',
                 ownerId: 0,
                 configurationId: 0
@@ -37,7 +38,8 @@ module.exports = {
             {
                 id: 1,
                 name: 'Sample PDF',
-                filename: 'sample.pdf',
+                originalName: 'sample.pdf',
+                filename: '1_sample.pdf',
                 hash: '4b41a3475132bd861b30a878e30aa56a',
                 ownerId: 0,
                 configurationId: 1

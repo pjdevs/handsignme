@@ -12,6 +12,10 @@ module.exports = (sequelize) => {
         },
         filename: {
             type: DataTypes.STRING,
+            allowNull: true
+        },
+        originalName: {
+            type: DataTypes.STRING,
             allowNull: false
         },
         hash: {
@@ -32,8 +36,9 @@ module.exports = (sequelize) => {
         timestamps: false
     })
 
-    Document.beforeCreate((document) => {
-        document.hash = hashFile(document.filename)
+    Document.afterCreate(async (document) => {
+        document.filename = `${document.id}_${document.originalName}`
+        await document.save()
     })
 
     return Document

@@ -2,7 +2,7 @@
   <div class="sign">
     <div class="row d-flex align-items-center my-4">
       <div class="col mx-2">
-        <PDFViewer v-if="file !== null" ref="viewer" :src="file"/>
+        <PDFViewer v-if="file !== null" ref="viewer" :signMode="false" :src="file"/>
       </div>
       <div class="col mx-2 justify-content-center">
         <div v-for="(step, index) in steps" :key="index" class="row d-flex">

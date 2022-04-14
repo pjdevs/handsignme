@@ -12,12 +12,16 @@ module.exports = {
                 type: Sequelize.STRING
             },
             filename: {
+                allowNull: true,
+                type: Sequelize.STRING
+            },
+            originalName: {
                 allowNull: false,
                 type: Sequelize.STRING
             },
             hash: {
                 type: Sequelize.STRING(32),
-                allowNull: false,
+                allowNull: true,
                 unique: true
             },
             configurationId: {

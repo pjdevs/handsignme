@@ -1,5 +1,6 @@
 const db = require('../models')
 const { filePath, saveFile, removeFile } = require('../utils/file-storage')
+const { hashFile } = require('../utils/hash')
 const { sendInvitationMail } = require('../utils/mail')
 const { ensureThumbnail } = require('../utils/thumbnail')
 
@@ -103,23 +104,26 @@ async function uploadPdf(req, res, next) {
     }
 
     try {
-        saveFile(req.file.originalname, req.file.buffer)
-    } catch (err) {
-        await cleanup()
-        return next(new Error(`Cannot save file ${req.file.originalname} : ${err.message}`))
-    }
-
-    try {
         document = await db.Document.create({
             name: req.body.name,
-            filename: req.file.originalname,
+            originalName: req.file.originalname,
             ownerId: owner.getDataValue('id'),
             configurationId: configuration.getDataValue('id')
         })
     } catch (err) {
         await cleanup()
+        console.log(err)
         return next(new Error(`Cannot create a new document with given data : ${err.message}`))
     }
+
+    try {
+        saveFile(`${document.id}_${req.file.originalname}`, req.file.buffer)
+    } catch (err) {
+        await cleanup()
+        return next(new Error(`Cannot save file ${req.file.originalname} : ${err.message}`))
+    }
+
+    await document.update({ hash: hashFile(document.filename) })
 
     for (const signatory of signatoriesData) {
         try {
