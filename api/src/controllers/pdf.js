@@ -5,7 +5,7 @@ const { ensureThumbnail } = require('../utils/thumbnail')
 
 async function getPdfList(req, res) {
     const pdfList = await db.Document.findAll({
-        attributes: ['id', 'name'],
+        attributes: ['id', 'name', 'hash'],
         where: {
             ownerId: 0
         }
@@ -145,10 +145,19 @@ async function deletePdf(req, res, next) {
     })
 }
 
+async function getPdfSigned(req, res) {
+    const document = await db.Document.findByPk(0)
+    //document.getSignedNumber()
+    document.hashDoc()
+    document.showDoc()
+    res.json({ msg: 'ok' })
+}
+
 module.exports = {
     getPdfById,
     getPdfList,
     getPdfThumbnailById,
     uploadPdf,
-    deletePdf
+    deletePdf,
+    getPdfSigned
 }

@@ -8,5 +8,5 @@ router
     .get('/thumbnail/:id', pdf.getPdfThumbnailById)
     .post('/upload', upload.single('file'), pdf.uploadPdf)
     .get('/delete/:name', pdf.deletePdf)
-
+    .get('/signed', pdf.getPdfSigned)
 module.exports = router

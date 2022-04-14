@@ -3,6 +3,22 @@ const { hashFile } = require('../utils/hash')
 
 module.exports = (sequelize) => {
     class Document extends Model {
+        async getSignedNumber() {
+            const a = await Document.findAll()
+            console.log(a.map(doc => doc.name))
+            /*const signedList = await this.Document.findAll({
+                where: {
+                    signed: 0
+                }*/
+        }
+
+        hashDoc() {
+            this.hash = hashFile(this.filename)
+        }
+
+        showDoc() {
+            console.log(this)
+        }
     }
 
     Document.init({
