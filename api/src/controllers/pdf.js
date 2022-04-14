@@ -177,6 +177,22 @@ async function deletePdf(req, res, next) {
     })
 }
 
+async function signPdf(req, res, next) {
+    const data = req.body.data
+
+    if (!data) {
+        return next(new Error('Singature data must be given to sign the document'))
+    }
+
+    const signatory = req.signatory
+
+    signatory.signed = true
+    signatory.data = data
+    await signatory.save()
+
+    res.json({ msg: 'ok' })
+}
+
 module.exports = {
     getPdfById,
     getPdfByToken,
@@ -184,5 +200,6 @@ module.exports = {
     getPdfList,
     getPdfThumbnailById,
     uploadPdf,
-    deletePdf
+    deletePdf,
+    signPdf
 }

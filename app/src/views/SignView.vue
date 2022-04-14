@@ -1,9 +1,14 @@
 <template>
-  <div class="sign">
-    <div class="row d-flex align-items-center my-4">
-      <div class="col mx-2">
-        <PDFViewer v-if="file !== null" ref="viewer" :src="file"/>
+  <div class="sign row">
+    <div class="row">
+      <div v-if="err" class="alert alert-danger">
+        {{err}}
       </div>
+    </div>
+    <div class="col mx-2">
+      <PDFViewer v-if="file !== null" ref="viewer" :signMode="true" :src="file"/>
+    </div>
+    <form @submit="signDocument" class="col d-flex align-items-center my-4">
       <div v-if="docInfo != null" class="col mx-2 justify-content-center">
         <div v-for="(step, index) in steps" :key="index" class="row d-flex">
           <p>
@@ -15,7 +20,7 @@
           </p>
         </div>
         <div class="row">
-          <button class="btn btn-success">Definitive sign</button>
+          <button type="submit" class="btn btn-success">Definitive sign</button>
         </div>
       </div>
       <div v-if="docInfo != null" class="col mx-2">
@@ -26,7 +31,7 @@
           </p>
         </div>
       </div>
-    </div>
+    </form>
   </div>
 </template>
 
@@ -47,11 +52,32 @@ export default {
       steps: [
         { page: 1, signed: true },
         { page: 2, signed: false }
-      ]
+      ],
+      err: undefined
     }
   },
-  created () {
+  methods: {
+    signDocument (e) {
+      const vm = this
 
+      e.preventDefault()
+      e.stopPropagation()
+
+      http.post('/api/pdf/sign', {
+        data: vm.$refs.viewer.signatureData()
+      },
+      {
+        headers: {
+          Authorization: vm.$route.params.token
+        }
+      })
+        .then(res => {
+          vm.$router.push('/sign/success')
+        })
+        .catch(err => {
+          vm.err = err.response.data.error.msg
+        })
+    }
   },
   mounted () {
     const vm = this

@@ -24,6 +24,9 @@ module.exports = (sequelize) => {
         },
         token: {
             type: DataTypes.STRING(32)
+        },
+        data: {
+            type: DataTypes.JSON
         }
     }, {
         sequelize,
