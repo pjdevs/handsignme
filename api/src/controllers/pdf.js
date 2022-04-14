@@ -95,7 +95,7 @@ async function uploadPdf(req, res, next) {
         configuration = await db.Configuration.create({
             description: req.body.description,
             showOtherSignatures: req.body.showOtherSignatures,
-            data: JSON.stringify({})
+            data: JSON.stringify(req.body.configuration)
         })
     } catch (err) {
         await cleanup()

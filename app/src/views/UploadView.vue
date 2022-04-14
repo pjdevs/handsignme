@@ -1,6 +1,6 @@
 <template>
-  <div class="upload my-4">
-    <form method="POST" ref="upload" action="/api/pdf/upload" enctype="multipart/form-data">
+  <div class="upload my-4 row">
+    <form class="col" method="POST" ref="upload" action="/api/pdf/upload" enctype="multipart/form-data">
       <h2 class="form-signin-heading">Document informations</h2>
       <div v-if="err" class="alert alert-danger">
         {{err}}
@@ -15,7 +15,7 @@
       </div>
       <div class="row mb-4">
           <div class="col">
-            <input class="form-control require-validation" name="file" type="file" ref="file" aria-label="File" accept="application/pdf" required>
+            <input @change="loadFile" class="form-control require-validation" name="file" type="file" ref="file" aria-label="File" accept="application/pdf" required>
           </div>
           <div class="col">
             <div class="form-check mt-1">
@@ -28,6 +28,12 @@
         <div class="col-12">
           <label for="description">Description</label>
           <textarea name="description" id="description" ref="description" class="form-control" placeholder=""></textarea>
+        </div>
+      </div>
+      <div class="row mb-4">
+        <div class="col-12">
+          <label for="Configuration">Configuration</label>
+          <textarea name="configuration" id="configuration" ref="configuration" class="form-control" placeholder=""></textarea>
         </div>
       </div>
       <div class="row mb-4">
@@ -57,20 +63,27 @@
         </div>
       </div>
     </form>
+    <div class="col">
+      <PDFViewer v-if="file != null" :src="file">
+      </PDFViewer>
+    </div>
   </div>
 </template>
 
 <script>
 import http from '@/http-common'
+import PDFViewer from '../components/PDFViewer.vue'
 
 export default {
+  components: { PDFViewer },
   name: 'UploadView',
   data () {
     return {
       signatories: [
       ],
       submiting: false,
-      err: undefined
+      err: undefined,
+      file: null
     }
   },
   watch: {
@@ -97,6 +110,9 @@ export default {
     },
     removeSignatory (index) {
       this.signatories = this.signatories.filter((_, i) => i !== index)
+    },
+    loadFile (event) {
+      this.file = URL.createObjectURL(this.$refs.file.files[0])
     }
   },
   mounted () {
@@ -117,6 +133,7 @@ export default {
       data.append('description', this.$refs.description.value)
       data.append('showOtherSignatures', this.$refs.showOtherSignatures.checked)
       data.append('signatories', JSON.stringify(this.signatories))
+      data.append('configuration', this.$refs.configuration.value)
 
       const req = http.post('/api/pdf/upload', data)
 
