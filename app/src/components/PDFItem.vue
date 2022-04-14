@@ -1,7 +1,7 @@
 <template>
   <div class="pdf-item">
       <div class="pdf-thumbnail text-center">
-        <router-link class="text-decoration-none text-muted" :to="{ name: 'sign', params: { pdfId: pdfId } }">
+        <router-link class="text-decoration-none text-muted" :to="{ name: 'home' }">
           <img class="pdf-thumbnail-img" v-bind:src="`/api/pdf/thumbnail/${pdfId}`" alt="A PDF thumbnail">
           <p>{{pdfName}}</p>
         </router-link>

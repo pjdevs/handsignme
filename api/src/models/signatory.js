@@ -24,6 +24,9 @@ module.exports = (sequelize) => {
         },
         token: {
             type: DataTypes.STRING(32)
+        },
+        data: {
+            type: DataTypes.JSON
         }
     }, {
         sequelize,
@@ -37,6 +40,7 @@ module.exports = (sequelize) => {
         const owner = await sequelize.models.User.findByPk(document.ownerId)
 
         signatory.token = hashToken(owner.dataValues, signatory, document.dataValues)
+        signatory = await signatory.save()
     })
 
     return Signatory

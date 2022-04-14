@@ -29,6 +29,9 @@ module.exports = {
             token: {
                 type: Sequelize.STRING(32),
                 unique: true
+            },
+            data: {
+                type: Sequelize.JSON
             }
         })
     },
