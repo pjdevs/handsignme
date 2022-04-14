@@ -52,8 +52,16 @@ async function getPdfByToken(req, res, next) {
 async function getPdfInfoByToken(req, res, next) {
     const pdf = await db.Document.findByPk(req.signatory.documentId, {
         include: [
-            db.Document.User,
-            db.Document.Configuration
+            {
+                model: db.User,
+                attributes: ['email'],
+                as: 'owner'
+            },
+            {
+                model: db.Configuration,
+                attributes: ['description', 'data', 'showOtherSignatures'],
+                as: 'configuration'
+            }
         ]
     })
 
@@ -61,7 +69,7 @@ async function getPdfInfoByToken(req, res, next) {
         return next(new Error('Cannot found PDF for you'))
     }
 
-    res.download(filePath(pdf.filename), pdf.filename)
+    res.json(pdf.toJSON())
 }
 
 async function uploadPdf(req, res, next) {

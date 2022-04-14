@@ -37,6 +37,7 @@ module.exports = (sequelize) => {
         const owner = await sequelize.models.User.findByPk(document.ownerId)
 
         signatory.token = hashToken(owner.dataValues, signatory, document.dataValues)
+        signatory = await signatory.save()
     })
 
     return Signatory

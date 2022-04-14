@@ -41,7 +41,7 @@ export default {
   },
   props: {
     src: {
-      type: Object,
+      type: String,
       required: true
     },
     page: {

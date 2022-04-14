@@ -4,7 +4,7 @@
       <div class="col mx-2">
         <PDFViewer v-if="file !== null" ref="viewer" :src="file"/>
       </div>
-      <div class="col mx-2 justify-content-center">
+      <div v-if="docInfo != null" class="col mx-2 justify-content-center">
         <div v-for="(step, index) in steps" :key="index" class="row d-flex">
           <p>
             {{ index + 1 }}.
@@ -18,11 +18,11 @@
           <button class="btn btn-success">Definitive sign</button>
         </div>
       </div>
-      <div class="col mx-2">
+      <div v-if="docInfo != null" class="col mx-2">
         <div class="row d-flex">
           <p>
             <i class="m-2 bi-check-circle" style="color: green;" aria-hidden="true"/>
-            Integrity of the document verified under identifier {{ doc.hash }}
+            Integrity of the document verified under identifier {{ docInfo.hash }}
           </p>
         </div>
       </div>
@@ -42,11 +42,7 @@ export default {
   },
   data () {
     return {
-      doc: {
-        id: 0,
-        description: 'Please sign this convention because it is very important',
-        hash: 'e89a8fcabcfedad457a421e54df451b8'
-      },
+      docInfo: null,
       file: null,
       steps: [
         { page: 1, signed: true },
@@ -69,6 +65,18 @@ export default {
       .then(res => {
         const blob = new Blob([res.data], { type: 'application/pdf' })
         vm.file = window.URL.createObjectURL(blob)
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
+
+    http.get('/api/pdf/info', {
+      headers: {
+        Authorization: vm.$route.params.token
+      }
+    })
+      .then(res => {
+        vm.docInfo = res.data
       })
       .catch(err => {
         console.log(err.response)
