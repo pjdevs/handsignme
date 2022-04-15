@@ -9,7 +9,7 @@ async function getUserList(req, res) {
     res.json(userList.map(user => user.dataValues))
 }
 
-async function getDocList(req, res, next) {
+async function getDocList(req, res) {
     const docList = await db.Document.findAll({
         attributes: ['id', 'name', 'ownerId']
     })
@@ -17,7 +17,7 @@ async function getDocList(req, res, next) {
     res.json(docList.map(doc => doc.dataValues))
 }
 
-async function deleteFile(req, res) {
+async function deleteFile(req, res, next) {
     const doc = await db.Document.findByPk(req.params.id)
 
     if(!doc) {
