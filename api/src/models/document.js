@@ -1,5 +1,4 @@
 const { Model, DataTypes } = require('sequelize')
-const { hashFile } = require('../utils/hash')
 
 module.exports = (sequelize) => {
     class Document extends Model {
