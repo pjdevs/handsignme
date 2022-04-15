@@ -9,7 +9,7 @@ async function getUserList(req, res) {
     res.json(userList.map(user => user.dataValues))
 }
 
-async function getDocList(req, res) {
+async function getDocList(req, res, next) {
     const docList = await db.Document.findAll({
         attributes: ['id', 'name', 'ownerId']
     })
@@ -20,7 +20,7 @@ async function getDocList(req, res) {
 async function deleteFile(req, res) {
     const doc = await db.Document.findByPk(req.params.id)
 
-    if(!doc){
+    if(!doc) {
         return next(new Error(`Cannot find a Document with id ${req.params.id}`))
     }
 
@@ -29,7 +29,7 @@ async function deleteFile(req, res) {
             documentId: req.params.id
         }
     })
-    await Promise.all(signatories.map(async signatory =>{
+    await Promise.all(signatories.map(async signatory => {
         await signatory.destroy()
     }))
 
@@ -39,7 +39,6 @@ async function deleteFile(req, res) {
     } catch (err) {
         return next(new Error(`Cannot remove the file : ${err.message}`))
     }
-    
     await doc.destroy()
     await config.destroy()
 
@@ -51,7 +50,7 @@ async function deleteFile(req, res) {
 async function deleteUser(req, res, next) {
     const user = await db.User.findByPk(req.params.id)
 
-    if(!user){
+    if(!user) {
         return next(new Error(`Cannot find a User with id ${req.params.id}`))
     }
 
@@ -67,7 +66,7 @@ async function deleteUser(req, res, next) {
                 documentId: doc.id
             }
         })
-        await Promise.all(signatories.map(async signatory =>{
+        await Promise.all(signatories.map(async signatory => {
             await signatory.destroy()
         }))
 
@@ -88,8 +87,6 @@ async function deleteUser(req, res, next) {
     })
 
 }
-
-
 
 module.exports = {
     getUserList,
