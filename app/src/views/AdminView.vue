@@ -27,34 +27,44 @@
 
     <table class="table">
       <caption>{{mode == 'userList' ? 'Complete user list' : 'Complete document list'}}</caption>
-      <thead v-if="mode == 'userlist'">
+      <thead v-if="mode == 'userList'">
         <tr>
           <th scope="col">#</th>
           <th scope="col">Email</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
-      <thead v-if="mode == 'doclist'">
+      <thead v-if="mode == 'docList'">
         <tr>
           <th scope="col">#</th>
           <th scope="col">Name</th>
           <th scope="col">Owner</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
-      <tbody v-if="mode == 'userlist'">
-        <tr v-for="user of users"  :key="user.id">
+      <tbody v-if="mode == 'userList'">
+        <tr v-for="(user, index) in users"  :key="user.id">
           <th scope="row">{{ user.id }}</th>
           <td>{{ user.email }}</td>
+          <td class="text-end">
+            <a href="#" type="button" class="btn btn-danger btn-small" @click="deleteUser(user, index);"><i class="bi bi-trash3"></i> Delete</a>
+          </td>
         </tr>
       </tbody>
-      <tbody v-if="mode == 'doclist'">
-        <tr v-for="doc of docs" :key="doc.id">
+      <tbody v-if="mode == 'docList'">
+        <tr v-for="(doc, index) in docs" :key="doc.id">
           <th scope="row">{{ doc.id }}</th>
           <td>{{ doc.name }}</td>
           <td>{{ doc.ownerId }}</td>
+          <td class="text-end">
+            <a href="#" type="button" class="btn btn-danger btn-small" @click="deleteFile(doc, index);"><i class="bi bi-trash3" ></i> Delete</a>
+          </td>
         </tr>
       </tbody>
     </table>
-
+    <div v-if="deletionMessage" class="alert alert-success" role="alert">
+          {{deletionMessage}}
+    </div>
   </div>
 </template>
 
@@ -67,15 +77,39 @@ export default {
     return {
       users: [],
       docs: [],
-      mode: 'userlist'
+      deletionDone: undefined,
+      deletionMessage: undefined,
+      mode: 'userList'
     }
   },
   methods: {
     showUserList: function () {
-      this.mode = 'userlist'
+      this.mode = 'userList'
+      this.deletionDone = undefined
+      this.deletionMessage = undefined
     },
     showDocList: function () {
-      this.mode = 'doclist'
+      this.mode = 'docList'
+      this.deletionDone = undefined
+      this.deletionMessage = undefined
+    },
+    deleteUser: function (user, index) {
+      http.delete(`/api/admin/user/delete/${user.id}`)
+        .then((res) => {
+          this.users.splice(index, 1)
+          this.deletionDone = 'userDeleted'
+          this.deletionMessage = `User "${user.email}" was successfully deleted.`
+        })
+        .catch(error => console.error(`There was an error deleting user: ${error}`))
+    },
+    deleteFile: function (doc, index) {
+      http.delete(`/api/admin/file/delete/${doc.id}`)
+        .then((res) => {
+          this.docs.splice(index, 1)
+          this.deletionDone = 'fileDeleted'
+          this.deletionMessage = `file "${doc.name}" was successfully deleted.`
+        })
+        .catch(error => console.error(`There was an error deleting file: ${error}`))
     }
   },
   mounted () {
