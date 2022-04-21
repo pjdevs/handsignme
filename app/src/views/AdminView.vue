@@ -47,7 +47,7 @@
           <th scope="row">{{ user.id }}</th>
           <td>{{ user.email }}</td>
           <td class="text-end">
-            <a href="#" type="button" class="btn btn-danger btn-small" @click="deleteUser(user, index);"><i class="bi bi-trash3"></i> Delete</a>
+            <a href="#" type="button" class="btn btn-danger btn-small" @click="deleteUser(user, index);"><i class="bi bi-trash3" aria-hidden="true"></i> Delete</a>
           </td>
         </tr>
       </tbody>
@@ -57,7 +57,7 @@
           <td>{{ doc.name }}</td>
           <td>{{ doc.ownerId }}</td>
           <td class="text-end">
-            <a href="#" type="button" class="btn btn-danger btn-small" @click="deleteFile(doc, index);"><i class="bi bi-trash3" ></i> Delete</a>
+            <a href="#" type="button" class="btn btn-danger btn-small" @click="deleteFile(doc, index);"><i class="bi bi-trash3" aria-hidden="true"></i> Delete</a>
           </td>
         </tr>
       </tbody>
