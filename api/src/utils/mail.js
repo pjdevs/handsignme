@@ -10,14 +10,21 @@ function nameFromMail(email) {
 
 async function sendInvitationMail(sender, signatories, document, configuration, link) {
     const senderName = nameFromMail(sender.email)
+    const mails = []
 
-    return transporter.sendMail({
-        from: '"HandSignMe" <noreply@handsignme.com>',
-        to: signatories.map(signatory => signatory.email).join(', '),
-        subject: '[HandSignMe] Document signing invitation',
-        text: `Hi there,\n\n${senderName} <${sender.email}> invited you to sign this document :\n\n${document.name}\n\n${configuration.description}\n\nFollow this link to sign it here ${link} or ignore this mail.\n\nHandSignMe`,
-        html: `Hi there,<br/><br/> <a href="mailto:${sender.email}">${senderName}</a> invited you to sign this document :<br/><br/><b>${document.name}</b><br/><br/><em>${configuration.description}</em><br/><br/>Follow this link to sign it <a href="=${link}">here</a> or ignore this mail.<br/><br/>HandSignMe`
-    })
+    for (const signatory of signatories) {
+        const others = signatories.filter(other => other !== signatory).map(other => other.email).join(', ')
+
+        transporter.sendMail({
+            from: '"HandSignMe" <noreply@handsignme.com>',
+            to: signatory.email,
+            subject: '[HandSignMe] Document signing invitation',
+            text: `Hi there,\n\n${senderName} <${sender.email}> invited you, and ${others}, to sign this document :\n\n${document.name}\n\n${configuration.description || 'No description'}\n\nFollow this link to sign it here ${link}/${signatory.token} or ignore this mail.\n\nHandSignMe`,
+            html: `Hi there,<br/><br/><a href="mailto:${sender.email}">${senderName}</a> invited you, and ${others}, to sign this document :<br/><br/><b>${document.name}</b><br/><br/><em>${configuration.description || 'No description'}</em><br/><br/>Follow this link to sign it <a href="=${link}/${signatory.token}">here</a> or ignore this mail.<br/><br/>HandSignMe`
+        })
+    }
+
+    return Promise.all(mails)
 }
 
 module.exports = {

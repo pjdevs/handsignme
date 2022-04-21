@@ -1,5 +1,6 @@
 const db = require('../models')
 const { filePath, saveFile, removeFile } = require('../utils/file-storage')
+const { hashFile } = require('../utils/hash')
 const { sendInvitationMail } = require('../utils/mail')
 const { ensureThumbnail } = require('../utils/thumbnail')
 
@@ -17,7 +18,7 @@ async function getPdfList(req, res) {
 async function getPdfThumbnailById(req, res, next) {
     const pdf = await db.Document.findByPk(req.params.id)
 
-    if (pdf === null) {
+    if (pdf === null || pdf.ownerId !== req.user.id) {
         return next(new Error(`Cannot found PDF with id ${req.params.id}`))
     }
 
@@ -32,11 +33,44 @@ async function getPdfThumbnailById(req, res, next) {
 async function getPdfById(req, res, next) {
     const pdf = await db.Document.findByPk(req.params.id)
 
-    if (pdf === null) {
+    if (pdf === null || pdf.ownerId !== req.user.id) {
         return next(new Error(`Cannot found PDF with id ${req.params.id}`))
     }
 
     res.download(filePath(pdf.filename), pdf.filename)
+}
+
+async function getPdfByToken(req, res, next) {
+    const pdf = await db.Document.findByPk(req.signatory.documentId)
+
+    if (pdf === null) {
+        next(new Error('No document was found'))
+    }
+
+    res.download(filePath(pdf.filename), pdf.filename)
+}
+
+async function getPdfInfoByToken(req, res, next) {
+    const pdf = await db.Document.findByPk(req.signatory.documentId, {
+        include: [
+            {
+                model: db.User,
+                attributes: ['email'],
+                as: 'owner'
+            },
+            {
+                model: db.Configuration,
+                attributes: ['description', 'data', 'showOtherSignatures'],
+                as: 'configuration'
+            }
+        ]
+    })
+
+    if (pdf === null) {
+        return next(new Error('Cannot found PDF for you'))
+    }
+
+    res.json(pdf.toJSON())
 }
 
 async function uploadPdf(req, res, next) {
@@ -70,7 +104,7 @@ async function uploadPdf(req, res, next) {
         configuration = await db.Configuration.create({
             description: req.body.description,
             showOtherSignatures: req.body.showOtherSignatures,
-            data: JSON.stringify({})
+            data: JSON.stringify(req.body.configuration)
         })
     } catch (err) {
         await cleanup()
@@ -78,23 +112,26 @@ async function uploadPdf(req, res, next) {
     }
 
     try {
-        saveFile(req.file.originalname, req.file.buffer)
-    } catch (err) {
-        await cleanup()
-        return next(new Error(`Cannot save file ${req.file.originalname} : ${err.message}`))
-    }
-
-    try {
         document = await db.Document.create({
             name: req.body.name,
-            filename: req.file.originalname,
+            originalName: req.file.originalname,
             ownerId: owner.getDataValue('id'),
             configurationId: configuration.getDataValue('id')
         })
     } catch (err) {
         await cleanup()
+        console.log(err)
         return next(new Error(`Cannot create a new document with given data : ${err.message}`))
     }
+
+    try {
+        saveFile(`${document.id}_${req.file.originalname}`, req.file.buffer)
+    } catch (err) {
+        await cleanup()
+        return next(new Error(`Cannot save file ${req.file.originalname} : ${err.message}`))
+    }
+
+    await document.update({ hash: hashFile(document.filename) })
 
     for (const signatory of signatoriesData) {
         try {
@@ -110,7 +147,7 @@ async function uploadPdf(req, res, next) {
     }
 
     try {
-        await sendInvitationMail(owner, signatoriesData, document, configuration, '#')
+        await sendInvitationMail(owner, signatories, document, configuration, `${req.hostname}/app/sign`)
     } catch (err) {
         await cleanup()
         return next(new Error(`Cannot send an email invitation to a signatory : ${err.message}`))
@@ -144,10 +181,29 @@ async function deletePdf(req, res, next) {
     })
 }
 
+async function signPdf(req, res, next) {
+    const data = req.body.data
+
+    if (!data) {
+        return next(new Error('Singature data must be given to sign the document'))
+    }
+
+    const signatory = req.signatory
+
+    signatory.signed = true
+    signatory.data = data
+    await signatory.save()
+
+    res.json({ msg: 'ok' })
+}
+
 module.exports = {
     getPdfById,
+    getPdfByToken,
+    getPdfInfoByToken,
     getPdfList,
     getPdfThumbnailById,
     uploadPdf,
-    deletePdf
+    deletePdf,
+    signPdf
 }

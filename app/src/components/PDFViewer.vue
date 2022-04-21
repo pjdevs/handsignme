@@ -18,7 +18,7 @@
         <div v-if="loading" class="spinner-border" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
-        <div class="pdf-page-wrapper"  v-bind:class="{ 'viusally-hidden': loading }">
+        <div class="pdf-page-wrapper"  v-bind:class="{ 'visually-hidden': loading }">
             <canvas class="shadow p-3 mb-5 bg-body rounded overflow-scroll" ref="pdfPage"></canvas>
         </div>
       </div>
@@ -36,7 +36,8 @@ export default {
       index: 1,
       currentScale: Number(this.scale),
       loading: false,
-      numPages: 0
+      numPages: 0,
+      configData: { signature: [] }
     }
   },
   props: {
@@ -51,6 +52,10 @@ export default {
     scale: {
       type: Number,
       default: 1
+    },
+    signMode: {
+      type: Boolean,
+      default: false
     },
     config: {
       type: Array,
@@ -79,10 +84,18 @@ export default {
     },
     currentScale (oldScale, newScale) {
       this.render()
+    },
+    src (oldSrc, newSrc) {
+      const vm = this
+
+      this.fetchDocument()
+        .then(() => {
+          vm.index = 1
+        })
     }
   },
   methods: {
-    filledConfig () {
+    signatureData () {
       return this.configData
     },
     renderConfig (ctx, configObject, docWidth, docHeight) {
@@ -96,22 +109,18 @@ export default {
       ctx.lineWidth = 5 * this.currentScale
       ctx.stroke()
 
-      if (configObject.signature.data) {
-        ctx.beginPath()
-        for (const line of configObject.signature.data) {
-          ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
-          ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
-        }
-        ctx.closePath()
-        ctx.strokeStyle = configObject.signature.color
-        ctx.lineWidth = 3 * this.currentScale
-        ctx.stroke()
-      } else {
-        configObject.signature.data = []
+      ctx.beginPath()
+      for (const line of this.configData.signature) {
+        ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
+        ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
       }
+      ctx.closePath()
+      ctx.strokeStyle = configObject.signature.color
+      ctx.lineWidth = 3 * this.currentScale
+      ctx.stroke()
     },
     setupConfig (ctx, docWidth, docHeight) {
-      for (const configObject of this.configData) {
+      for (const configObject of this.config) {
         if (configObject.pages.includes(this.index) && configObject.signature) {
           this.renderConfig(ctx, configObject, docWidth, docHeight)
           this.registerSignatureHandler(configObject, docWidth, docHeight)
@@ -215,7 +224,7 @@ export default {
             ctx.lineWidth = 3 * vm.currentScale
             ctx.stroke()
 
-            configObject.signature.data.push({
+            vm.configData.signature.push({
               from: {
                 x: lastPosition.x / docWidth,
                 y: lastPosition.y / docHeight
@@ -292,26 +301,29 @@ export default {
         canvas.removeEventListener('mousedown', handleStartDrawing)
         canvas.removeEventListener('touchstart', handleStartDrawingMobile)
       })
+    },
+    fetchDocument () {
+      const vm = this
+
+      return pdfjs.getDocument(this.src).promise
+        .then(doc => {
+          vm.doc = doc
+          vm.numPages = doc.numPages
+          return vm.render()
+        })
+        .then(() => {
+          vm.loading = false
+        })
+        .catch(console.log)
     }
   },
   mounted () {
-    const vm = this
     this.loading = true
     this.doc = { numPages: 0 }
-    this.configData = this.config
     this.cleanHandlers = []
 
     pdfjs.GlobalWorkerOptions.workerSrc = '/app/js/pdf.worker.min.js'
-    pdfjs.getDocument(this.src).promise
-      .then(doc => {
-        vm.doc = doc
-        vm.numPages = doc.numPages
-        return vm.render()
-      })
-      .then(() => {
-        vm.loading = false
-      })
-      .catch(alert)
+    this.fetchDocument()
   }
 }
 </script>

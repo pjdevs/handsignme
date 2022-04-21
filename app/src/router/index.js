@@ -18,13 +18,13 @@ const routes = [
     meta: onlyAuth
   },
   {
-    path: '/sign/:pdfId',
+    path: '/sign/:token',
     name: 'sign',
     components: {
       default: () => import('@/views/SignView.vue'),
       Navbar: loginNavbar
     },
-    meta: onlyAuth
+    meta: onlyNonAuth
   },
   {
     path: '/upload',
@@ -70,16 +70,18 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-  const auth = useAuthStore()
-  const isAuth = await auth.verify()
+  if (to.meta.requiresAuth || to.meta.onlyAuth) {
+    const auth = useAuthStore()
+    const isAuth = await auth.verify()
 
-  if (to.meta.requiresAuth && !isAuth) {
-    return {
-      path: '/login',
-      query: { redirect: to.fullPath }
+    if (to.meta.requiresAuth && !isAuth) {
+      return {
+        path: '/login',
+        query: { redirect: to.fullPath }
+      }
+    } else if (to.meta.onlyNonAuth && isAuth) {
+      return from
     }
-  } else if (to.meta.onlyNonAuth && isAuth) {
-    return from
   }
 })
 

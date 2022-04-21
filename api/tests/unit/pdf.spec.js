@@ -11,6 +11,7 @@ describe('PDF Controller', () => {
                 {
                     id: 12,
                     name: 'File',
+                    originalName: 'file.pdf',
                     filename: 'file.pdf',
                     ownerId: 0,
                     configurationId: 0
@@ -34,6 +35,7 @@ describe('PDF Controller', () => {
                 {
                     id: 12,
                     name: 'File',
+                    originalName: 'file.pdf',
                     filename: 'file.pdf',
                     ownerId: 0,
                     configurationId: 0

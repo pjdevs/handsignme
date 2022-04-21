@@ -2,16 +2,19 @@ const router = require('express').Router()
 const pdf = require('./pdf')
 const auth = require('./auth')
 const admin = require('./admin')
-const { isAuthenticated } = require('../middlewares/auth')
+const token = require('./token')
 
 router
-    .use('/pdf', isAuthenticated, pdf)
+    .use('/pdf', pdf)
     .use('/auth', auth)
     .use('/admin', admin)
+    .use('/token', token)
     .use((req, res) => {
         res.status(404).json({
             error: {
-                msg: `${req.url} not found`
+                name: 'Not Found',
+                msg: `${req.url} not found`,
+                text: 'Url not found'
             }
         })
     })

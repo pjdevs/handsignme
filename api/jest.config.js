@@ -13,6 +13,7 @@ module.exports = {
         '**/tests/**/*.(spec|test).js'
     ],
     collectCoverageFrom: [
-        'src/controllers/**/*.js'
+        'src/controllers/**/*.js',
+        'src/utils/**/*.js'
     ]
 }

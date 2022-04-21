@@ -2,7 +2,7 @@ const { Op } = require('sequelize')
 
 module.exports = {
     async up(queryInterface) {
-        await queryInterface.bulkInsert('Users', [
+        const users = [
             {
                 id: 0,
                 email: 'test@mail.com',
@@ -10,9 +10,8 @@ module.exports = {
                 salt: '$2b$10$8bA0qkhDuMacZ8/PQbsmku',
                 isAdmin: true
             }
-        ])
-
-        await queryInterface.bulkInsert('Configurations', [
+        ]
+        const configurations = [
             {
                 id: 0,
                 description: 'Signe mon super PDF stp',
@@ -24,13 +23,14 @@ module.exports = {
                 description: 'Signe mon super PDF stp',
                 showOtherSignatures: true
             }
-        ])
 
-        await queryInterface.bulkInsert('Documents', [
+        ]
+        const documents = [
             {
                 id: 0,
                 name: 'Cahier des charges',
-                filename: 'CDC_HSM_v2.pdf',
+                originalName: 'CDC_HSM_v2.pdf',
+                filename: '0_CDC_HSM_v2.pdf',
                 hash: '6004fc053f2ae597928f2d9cc6c052b6',
                 ownerId: 0,
                 configurationId: 0
@@ -38,33 +38,41 @@ module.exports = {
             {
                 id: 1,
                 name: 'Sample PDF',
-                filename: 'sample.pdf',
+                originalName: 'sample.pdf',
+                filename: '1_sample.pdf',
                 hash: '4b41a3475132bd861b30a878e30aa56a',
                 ownerId: 0,
                 configurationId: 1
             }
-        ])
-
-        await queryInterface.bulkInsert('Signatories', [
+        ]
+        const signatories = [
             {
                 id: 0,
                 email: 'test0@mail.com',
                 documentId: 0,
-                signed: true
+                signed: true,
+                token: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
             },
             {
                 id: 1,
                 email: 'test1@mail.com',
                 documentId: 0,
-                signed: true
+                signed: true,
+                token: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
             },
             {
                 id: 2,
                 email: 'test2@mail.com',
                 documentId: 1,
-                signed: false
+                signed: false,
+                token: 'cccccccccccccccccccccccccccccccc'
             }
-        ])
+        ]
+
+        await queryInterface.bulkInsert('Users', users)
+        await queryInterface.bulkInsert('Configurations', configurations)
+        await queryInterface.bulkInsert('Documents', documents)
+        await queryInterface.bulkInsert('Signatories', signatories)
     },
 
     async down(queryInterface) {
