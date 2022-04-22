@@ -37,7 +37,12 @@ export default {
       currentScale: Number(this.scale),
       loading: false,
       numPages: 0,
-      configData: { signature: [] }
+      configData: [
+        {
+          page: 1,
+          signature: []
+        }
+      ]
     }
   },
   props: {
@@ -62,6 +67,7 @@ export default {
       default: () => {
         return [
           {
+            email: 'foo@bar.com',
             signature: {
               rect: {
                 x: 0.65,
@@ -110,9 +116,13 @@ export default {
       ctx.stroke()
 
       ctx.beginPath()
-      for (const line of this.configData.signature) {
-        ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
-        ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
+      for (const signature of this.configData) {
+        if (signature.page === this.index) {
+          for (const line of signature.signature) {
+            ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
+            ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
+          }
+        }
       }
       ctx.closePath()
       ctx.strokeStyle = configObject.signature.color
@@ -224,7 +234,7 @@ export default {
             ctx.lineWidth = 3 * vm.currentScale
             ctx.stroke()
 
-            vm.configData.signature.push({
+            vm.configData[0].signature.push({
               from: {
                 x: lastPosition.x / docWidth,
                 y: lastPosition.y / docHeight

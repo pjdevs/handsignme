@@ -12,5 +12,6 @@ router
     .post('/upload', isAuthenticated, upload.single('file'), pdf.uploadPdf)
     .get('/delete/:name', isAuthenticated, pdf.deletePdf)
     .post('/sign', isSignatory, pdf.signPdf)
+    .get('/signed/:id', pdf.getSignedPdf)
 
 module.exports = router
