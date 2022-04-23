@@ -27,7 +27,20 @@ async function sendInvitationMail(sender, signatories, document, configuration, 
     return Promise.all(mails)
 }
 
+async function sendSignatureNotificationMail(signatory, document) {
+    const signatoryName = nameFromMail(signatory.email)
+
+    return transporter.sendMail({
+        from: '"HandSignMe" <noreply@handsignme.com>',
+        to: document.owner.email,
+        subject: '[HandSignMe] Singature notification',
+        text: `Hi there,\n\n${signatoryName} <${signatory.email}> just signed this document : ${document.name}.\n\nHandSignMe`,
+        html: `Hi there,<br/><br/><a href="mailto:${signatory.email}">${signatoryName}</a> just signed this document : ${document.name}.\n\nHandSignMe`
+    })
+}
+
 module.exports = {
-    sendInvitationMail: sendInvitationMail,
-    nameFromMail: nameFromMail
+    sendInvitationMail,
+    sendSignatureNotificationMail,
+    nameFromMail
 }

@@ -16,7 +16,36 @@ module.exports = {
                 id: 0,
                 description: 'Signe mon super PDF stp',
                 showOtherSignatures: false,
-                data: '{}'
+                data: JSON.stringify([
+                    {
+                        email: 'foo1@bar.com',
+                        signature: {
+                            rect: {
+                                x: 0.65,
+                                y: 0.85,
+                                width: 0.3,
+                                height: 0.1,
+                                color: 'purple'
+                            },
+                            color: 'black'
+                        },
+                        page: 1
+                    },
+                    {
+                        email: 'foo2@bar.com',
+                        signature: {
+                            rect: {
+                                x: 0.25,
+                                y: 0.85,
+                                width: 0.3,
+                                height: 0.1,
+                                color: 'red'
+                            },
+                            color: 'black'
+                        },
+                        page: 1
+                    }
+                ])
             },
             {
                 id: 1,
@@ -48,23 +77,23 @@ module.exports = {
         const signatories = [
             {
                 id: 0,
-                email: 'test0@mail.com',
+                email: 'foo1@bar.com',
                 documentId: 0,
-                signed: true,
+                signed: false,
                 token: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
             },
             {
                 id: 1,
-                email: 'test1@mail.com',
+                email: 'foo2@bar.com',
                 documentId: 0,
-                signed: true,
+                signed: false,
                 token: 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
             },
             {
                 id: 2,
                 email: 'test2@mail.com',
                 documentId: 1,
-                signed: false,
+                signed: true,
                 token: 'cccccccccccccccccccccccccccccccc'
             }
         ]

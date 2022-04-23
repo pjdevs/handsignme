@@ -1,12 +1,18 @@
 <template>
-  <div class="sign row">
+  <div v-if="docInfo !== null" class="sign row">
     <div class="row">
       <div v-if="err" class="alert alert-danger">
         {{err}}
       </div>
     </div>
     <div class="col mx-2">
-      <PDFViewer v-if="file !== null" ref="viewer" :signMode="true" :src="file"/>
+      <PDFViewer v-if="file !== null" ref="viewer"
+        :config="docInfo.configuration.data"
+        :showOtherSignatures="docInfo.configuration.showOtherSignatures"
+        :otherSignatories="docInfo.otherSignatories"
+        :signatory="docInfo.signatory"
+        :signMode="true"
+        :src="file"/>
     </div>
     <form @submit="signDocument" class="col d-flex align-items-center my-4">
       <div v-if="docInfo != null" class="col mx-2 justify-content-center">
@@ -82,6 +88,21 @@ export default {
   mounted () {
     const vm = this
 
+    http.get('/api/pdf/info', {
+      headers: {
+        Authorization: vm.$route.params.token
+      }
+    })
+      .then(res => {
+        vm.docInfo = res.data
+        if (vm.docInfo.signatory.signed) {
+          vm.$router.push('/sign/error')
+        }
+      })
+      .catch(err => {
+        console.log(err.response)
+      })
+
     http.get('/api/pdf/file', {
       responseType: 'blob',
       headers: {
@@ -91,18 +112,6 @@ export default {
       .then(res => {
         const blob = new Blob([res.data], { type: 'application/pdf' })
         vm.file = window.URL.createObjectURL(blob)
-      })
-      .catch(err => {
-        console.log(err.response)
-      })
-
-    http.get('/api/pdf/info', {
-      headers: {
-        Authorization: vm.$route.params.token
-      }
-    })
-      .then(res => {
-        vm.docInfo = res.data
       })
       .catch(err => {
         console.log(err.response)
