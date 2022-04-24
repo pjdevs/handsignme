@@ -10,6 +10,15 @@ const loginNavbar = () => import('@/components/LoginNavbar.vue')
 const routes = [
   {
     path: '/',
+    name: 'landing',
+    components: {
+      default: () => import('@/views/LandingView.vue'),
+      Navbar: loginNavbar
+    },
+    meta: { requiresAuth: false, onlyNonAuth: false }
+  },
+  {
+    path: '/home',
     name: 'home',
     components: {
       default: () => import('@/views/HomeView.vue'),
@@ -22,6 +31,24 @@ const routes = [
     name: 'sign',
     components: {
       default: () => import('@/views/SignView.vue'),
+      Navbar: loginNavbar
+    },
+    meta: onlyNonAuth
+  },
+  {
+    path: '/sign/success',
+    name: 'signSuccess',
+    components: {
+      default: () => import('@/views/SignSuccessView.vue'),
+      Navbar: loginNavbar
+    },
+    meta: onlyNonAuth
+  },
+  {
+    path: '/sign/error',
+    name: 'signError',
+    components: {
+      default: () => import('@/views/SignErrorView.vue'),
       Navbar: loginNavbar
     },
     meta: onlyNonAuth

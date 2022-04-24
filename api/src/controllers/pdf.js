@@ -1,8 +1,11 @@
 const db = require('../models')
 const { filePath, saveFile, removeFile } = require('../utils/file-storage')
 const { hashFile } = require('../utils/hash')
-const { sendInvitationMail } = require('../utils/mail')
+const { sendInvitationMail, sendSignatureNotificationMail } = require('../utils/mail')
 const { ensureThumbnail } = require('../utils/thumbnail')
+const { PDFDocument, rgb } = require('pdf-lib')
+const fs = require('fs')
+const { Op } = require('sequelize')
 
 async function getPdfList(req, res) {
     const pdfList = await db.Document.findAll({
@@ -37,7 +40,7 @@ async function getPdfById(req, res, next) {
         return next(new Error(`Cannot found PDF with id ${req.params.id}`))
     }
 
-    res.download(filePath(pdf.filename), pdf.filename)
+    res.download(filePath(pdf.filename), pdf.originalName)
 }
 
 async function getPdfByToken(req, res, next) {
@@ -47,7 +50,7 @@ async function getPdfByToken(req, res, next) {
         next(new Error('No document was found'))
     }
 
-    res.download(filePath(pdf.filename), pdf.filename)
+    res.download(filePath(pdf.filename), pdf.originalName)
 }
 
 async function getPdfInfoByToken(req, res, next) {
@@ -65,12 +68,24 @@ async function getPdfInfoByToken(req, res, next) {
             }
         ]
     })
+    const otherSignatories = await db.Signatory.findAll({
+        where: {
+            id: {
+                [Op.ne]: req.signatory.id
+            },
+            documentId: pdf.id
+        }
+    })
 
     if (pdf === null) {
-        return next(new Error('Cannot found PDF for you'))
+        return next(new Error('Cannot find PDF for you'))
     }
 
-    res.json(pdf.toJSON())
+    const data = pdf.toJSON()
+    data.signatory = req.signatory
+    data.otherSignatories = otherSignatories
+
+    res.json(data)
 }
 
 async function uploadPdf(req, res, next) {
@@ -120,7 +135,6 @@ async function uploadPdf(req, res, next) {
         })
     } catch (err) {
         await cleanup()
-        console.log(err)
         return next(new Error(`Cannot create a new document with given data : ${err.message}`))
     }
 
@@ -189,12 +203,64 @@ async function signPdf(req, res, next) {
     }
 
     const signatory = req.signatory
+    const document = await db.Document.findByPk(signatory.documentId, {
+        include: {
+            model: db.User,
+            as: 'owner'
+        }
+    })
 
     signatory.signed = true
     signatory.data = data
     await signatory.save()
 
+    await sendSignatureNotificationMail(signatory, document)
+
     res.json({ msg: 'ok' })
+}
+
+async function getSignedPdf(req, res, next) {
+    try {
+        const document = await db.Document.findByPk(req.params.id, {
+            include: {
+                model: db.Configuration,
+                as: 'configuration'
+            }
+        })
+        const signatories = await db.Signatory.findAll({
+            where: {
+                documentId: document.id
+            }
+        })
+
+        const pdf = await PDFDocument.load(fs.readFileSync(filePath(document.filename)))
+
+        for (const signatory of signatories) {
+            if (signatory.data !== null) {
+                for (const signature of signatory.data) {
+                    const page = pdf.getPage(signature.page - 1)
+                    const width = page.getWidth()
+                    const height = page.getHeight()
+
+                    for (const { from, to } of signature.signature) {
+                        page.drawLine({
+                            start: { x: from.x * width, y: (1.0 - from.y) * height },
+                            end: { x: to.x * width, y: (1.0 - to.y) * height },
+                            thickness: 1,
+                            color: rgb(0.0, 0.0, 0.0),
+                            opacity: 1
+                        })
+                    }
+                }
+            }
+        }
+
+        res
+            .setHeader('Content-Type', 'application/pdf')
+            .send(Buffer.from(await pdf.save()))
+    } catch (err) {
+        next(err)
+    }
 }
 
 module.exports = {
@@ -203,6 +269,7 @@ module.exports = {
     getPdfInfoByToken,
     getPdfList,
     getPdfThumbnailById,
+    getSignedPdf,
     uploadPdf,
     deletePdf,
     signPdf

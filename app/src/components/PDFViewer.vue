@@ -37,7 +37,12 @@ export default {
       currentScale: Number(this.scale),
       loading: false,
       numPages: 0,
-      configData: { signature: [] }
+      configData: [
+        {
+          page: 1,
+          signature: []
+        }
+      ]
     }
   },
   props: {
@@ -57,11 +62,22 @@ export default {
       type: Boolean,
       default: false
     },
+    showOtherSignatures: {
+      type: Boolean,
+      default: false
+    },
+    signatory: {
+      type: Object
+    },
+    otherSignatories: {
+      type: Array
+    },
     config: {
       type: Array,
       default: () => {
         return [
           {
+            email: 'foo@bar.com',
             signature: {
               rect: {
                 x: 0.65,
@@ -72,7 +88,21 @@ export default {
               },
               color: 'black'
             },
-            pages: [1]
+            page: 1
+          },
+          {
+            email: 'foo@bar.com',
+            signature: {
+              rect: {
+                x: 0.25,
+                y: 0.85,
+                width: 0.3,
+                height: 0.1,
+                color: 'red'
+              },
+              color: 'black'
+            },
+            page: 1
           }
         ]
       }
@@ -110,20 +140,45 @@ export default {
       ctx.stroke()
 
       ctx.beginPath()
-      for (const line of this.configData.signature) {
-        ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
-        ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
+      for (const signature of this.configData) {
+        if (signature.page === this.index) {
+          for (const line of signature.signature) {
+            ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
+            ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
+          }
+        }
       }
       ctx.closePath()
+
+      if (this.showOtherSignatures) {
+        ctx.beginPath()
+        for (const signatory of this.otherSignatories) {
+          for (const signature of signatory.data) {
+            if (signature.page === this.index) {
+              for (const line of signature.signature) {
+                ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
+                ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
+              }
+            }
+          }
+        }
+        ctx.closePath()
+      }
+
       ctx.strokeStyle = configObject.signature.color
       ctx.lineWidth = 3 * this.currentScale
       ctx.stroke()
     },
     setupConfig (ctx, docWidth, docHeight) {
       for (const configObject of this.config) {
-        if (configObject.pages.includes(this.index) && configObject.signature) {
-          this.renderConfig(ctx, configObject, docWidth, docHeight)
-          this.registerSignatureHandler(configObject, docWidth, docHeight)
+        if (configObject.page === this.index && configObject.signature) {
+          if (this.showOtherSignatures || configObject.email === this.signatory.email) {
+            this.renderConfig(ctx, configObject, docWidth, docHeight)
+
+            if (this.signMode) {
+              this.registerSignatureHandler(configObject, docWidth, docHeight)
+            }
+          }
         }
       }
     },
@@ -224,7 +279,7 @@ export default {
             ctx.lineWidth = 3 * vm.currentScale
             ctx.stroke()
 
-            vm.configData.signature.push({
+            vm.configData[0].signature.push({
               from: {
                 x: lastPosition.x / docWidth,
                 y: lastPosition.y / docHeight
