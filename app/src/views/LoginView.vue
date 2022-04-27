@@ -58,7 +58,7 @@ export default {
         password: vm.password
       }))
         .then(res => {
-          vm.$router.push(this.$route.query.redirect || '/')
+          vm.$router.push(this.$route.query.redirect || '/home')
         })
         .catch(err => {
           vm.err = err.response.data
