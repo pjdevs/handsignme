@@ -8,12 +8,12 @@ describe('Hash Functions', () => {
             const document = { id: 2 }
 
             const hashToken = hash.hashToken(user, signatory, document, 4)
-            expect(hashToken).toBe('3578d1bc2921e0a01b5162fca23aec4d')
+            expect(hashToken).toBe('23e40fa4aa765152a4f9364036f07d12')
         })
 
-        it('It can use a random number', () => {
+        it('We can verify the length of the token', () => {
             const user = { id: 1, email: 'test@mail.com' }
-            const signatory = { id: 3, email: 'test2@mail.com' }
+            const signatory = { id: 18, email: 'test2@mail.com' }
             const document = { id: 2 }
 
             const hashToken = hash.hashToken(user, signatory, document)
