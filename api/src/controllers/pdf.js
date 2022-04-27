@@ -68,6 +68,10 @@ async function getPdfInfoByToken(req, res, next) {
             }
         ]
     })
+
+    if (pdf === null) {
+        return next(new Error('Cannot find PDF for you'))
+    }
     const otherSignatories = await db.Signatory.findAll({
         where: {
             id: {
@@ -76,10 +80,6 @@ async function getPdfInfoByToken(req, res, next) {
             documentId: pdf.id
         }
     })
-
-    if (pdf === null) {
-        return next(new Error('Cannot find PDF for you'))
-    }
 
     const data = pdf.toJSON()
     data.signatory = req.signatory
