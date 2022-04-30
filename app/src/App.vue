@@ -3,15 +3,12 @@
   <div class="container vh-100">
     <router-view/>
   </div>
-  <footer class="text-lg-start bg-light text-black mt-4">
-    <div class="text-center p-3">
-      HandSignMe - 2022 - GPL 3.0
-    </div>
-  </footer>
+  <Footer/>
 </template>
 
 <script>
 import http from '@/http-common'
+import Footer from './components/FooterComponent.vue'
 
 export default {
   name: 'App',
@@ -22,6 +19,9 @@ export default {
         { title: 'Signup', route: '/signup', icon: 'bi-pencil-fill' }
       ]
     }
+  },
+  components: {
+    Footer
   },
   methods: {
     async logout () {
