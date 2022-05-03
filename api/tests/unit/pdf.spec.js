@@ -15,7 +15,9 @@ describe('PDF Controller', () => {
                     filename: 'file.pdf',
                     ownerId: 0,
                     configurationId: 0,
-                    signed: true
+                    signed: true,
+                    nbSigned: 0,
+                    nbTotal: 0
                 }
             ]
 
@@ -25,7 +27,14 @@ describe('PDF Controller', () => {
             await db.Document.create(myFiles[0])
             await pdf.getPdfList(req, res)
 
-            expect(res.json).toHaveBeenCalledWith(myFiles.map(file => ({ id: file.id, name: file.name, signed: file.signed })))
+            expect(res.json)
+                .toHaveBeenCalledWith(myFiles.map(file => ({
+                    id: file.id,
+                    name: file.name,
+                    signed: file.signed,
+                    nbSigned: 0,
+                    nbTotal: 0
+                })))
         })
 
         it('Send an empty list when no document belonging', async () => {

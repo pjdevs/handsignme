@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <router-link to="/" class="navbar-brand" href="#"><i class="bi-file-earmark-pdf-fill" aria-hidden="true"/> HandSignMe</router-link>
+      <router-link to="/home" class="navbar-brand" href="#"><i class="bi-file-earmark-pdf-fill" aria-hidden="true"/> HandSignMe</router-link>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>

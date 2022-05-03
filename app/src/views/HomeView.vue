@@ -5,8 +5,11 @@
         <div class="d-flex col-auto my-4" v-for="pdf of pdfList" :key="pdf.id">
           <div class="card p-2 m-2 border-2" :class="{ 'border-success': pdf.signed, 'border-warning': !pdf.signed }">
             <PDFItem :pdfId="pdf.id" :pdfName="pdf.name"/>
-            <p class="text-center text-success" v-if="pdf.signed">Complete <i class="bi-file-earmark-check" aria-hidden="true"></i></p>
+            <a v-if="pdf.signed" :href="`/api/pdf/signed/${pdf.id}`">
+              <p class="text-center text-success" >Complete <i class="bi-file-earmark-check" aria-hidden="true"></i></p>
+            </a>
             <p v-else class="text-center text-warning">In progress...</p>
+            <p class="text-center">{{pdf.nbSigned}}/{{pdf.nbTotal}}</p>
           </div>
         </div>
       </div>

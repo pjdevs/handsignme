@@ -24,7 +24,11 @@ async function getPdfList(req, res) {
             }
         })
 
-        document.signed = signatories.filter(s => s.signed).length === signatories.length
+        const signedSignatories = signatories.filter(s => s.signed)
+
+        document.nbSigned = signedSignatories.length
+        document.nbTotal = signatories.length
+        document.signed = signedSignatories.length === signatories.length
     }
 
     res.json(documentListData)
@@ -269,6 +273,7 @@ async function getSignedPdf(req, res, next) {
 
         res
             .setHeader('Content-Type', 'application/pdf')
+            .setHeader('Content-disposition', 'attachment; filename=' + document.originalName)
             .send(Buffer.from(await pdf.save()))
     } catch (err) {
         next(err)
