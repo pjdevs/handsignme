@@ -3,8 +3,10 @@
     <div class="col-9">
       <div class="row overflow-auto">
         <div class="d-flex col-auto my-4" v-for="pdf of pdfList" :key="pdf.id">
-          <div class="card p-2 m-2">
+          <div class="card p-2 m-2 border-2" :class="{ 'border-success': pdf.signed, 'border-warning': !pdf.signed }">
             <PDFItem :pdfId="pdf.id" :pdfName="pdf.name"/>
+            <p class="text-center text-success" v-if="pdf.signed">Complete <i class="bi-file-earmark-check" aria-hidden="true"></i></p>
+            <p v-else class="text-center text-warning">In progress...</p>
           </div>
         </div>
       </div>
@@ -38,6 +40,7 @@ export default {
     http.get('/api/pdf/list')
       .then(pdfList => {
         vm.pdfList = pdfList.data
+        console.log(pdfList.data)
       })
       .catch(alert)
   }

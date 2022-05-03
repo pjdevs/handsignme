@@ -8,14 +8,26 @@ const fs = require('fs')
 const { Op } = require('sequelize')
 
 async function getPdfList(req, res) {
-    const pdfList = await db.Document.findAll({
+    const documentList = await db.Document.findAll({
         attributes: ['id', 'name'],
         where: {
             ownerId: req.user.id
         }
     })
 
-    res.json(pdfList.map(file => file.dataValues))
+    const documentListData = documentList.map(s => s.toJSON())
+
+    for (const document of documentListData) {
+        const signatories = await db.Signatory.findAll({
+            where: {
+                documentId: document.id
+            }
+        })
+
+        document.signed = signatories.filter(s => s.signed).length === signatories.length
+    }
+
+    res.json(documentListData)
 }
 
 async function getPdfThumbnailById(req, res, next) {

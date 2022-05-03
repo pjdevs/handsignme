@@ -172,7 +172,7 @@ export default {
     setupConfig (ctx, docWidth, docHeight) {
       for (const configObject of this.config) {
         if (configObject.page === this.index && configObject.signature) {
-          if (this.showOtherSignatures || configObject.email === this.signatory.email) {
+          if (!this.signMode || this.showOtherSignatures || configObject.email === this.signatory.email) {
             this.renderConfig(ctx, configObject, docWidth, docHeight)
 
             if (this.signMode) {
