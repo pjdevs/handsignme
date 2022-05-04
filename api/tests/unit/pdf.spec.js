@@ -59,30 +59,6 @@ describe('PDF Controller', () => {
     })
 
     describe('Queries the pdf by token', () => {
-        it('The document is not found', async () => {
-            const req = mockRequest()
-            const res = mockResponse()
-            req.signatory = { id: 0 }
-            const next = jest.fn(emptyFunction)
-
-            const myFiles = [
-                {
-                    id: 12,
-                    name: 'File',
-                    originalName: 'file.pdf',
-                    filename: 'file.pdf',
-                    ownerId: 0,
-                    configurationId: 0
-                }
-            ]
-            await db.sequelize.sync({ force: true })
-            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
-            await db.Configuration.create({ id: 0, description: 'A document', showOtherSignatures: false })
-            await db.Document.create(myFiles[0])
-            await pdf.getPdfInfoByToken(req, res, next)
-            expect(res.json).toHaveBeenCalledWith([])
-        })
-
         it('The document is not found and the error is sent', async () => {
             const req = mockRequest()
             const res = mockResponse()
@@ -131,7 +107,55 @@ describe('PDF Controller', () => {
             await pdf.getPdfInfoByToken(req, res, next)
             const call = res.json.mock.calls[0][0]
             expect(call.signatory.id).toBe(3)
+            expect(call.id).toBe(4)
+        })
+    })
+    describe('Delete the pdf by id', () => {
+        it('The document is not found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.params = { id: 0 }
+            const next = jest.fn(emptyFunction)
 
+            const myFiles = [
+                {
+                    id: 12,
+                    name: 'File',
+                    originalName: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            ]
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            await db.Configuration.create({ id: 0, description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFiles[0])
+            await pdf.deletePdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        })
+        it('The document is not remove', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.params = { id: 12 }
+            const next = jest.fn(emptyFunction)
+
+            const myFiles = [
+                {
+                    id: 12,
+                    name: 'File',
+                    originalName: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            ]
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            await db.Configuration.create({ id: 0, description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFiles[0])
+            await pdf.deletePdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(0)
         })
     })
 })
