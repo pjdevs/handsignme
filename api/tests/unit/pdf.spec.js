@@ -42,8 +42,7 @@ describe('PDF Controller', () => {
                     nbSigned: 0,
                     nbTotal: 0
                 })))
-        })
-
+        }),
         it('Send an empty list when no document belonging', async () => {
             const req = mockRequest()
             const res = mockResponse()
@@ -70,6 +69,40 @@ describe('PDF Controller', () => {
         })
     })
 
+    describe('Ge the PDF Thumbnail by ID', () => {
+        it('Pdf not found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            const next = jest.fn(emptyFunction)
+            await pdf.getPdfThumbnailById(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('Pdf not found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            const next = jest.fn(emptyFunction)
+            const myFiles = [
+                {
+                    id: 1,
+                    name: 'File',
+                    originalName: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            ]
+
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            await db.Configuration.create({ id: 0, email: 'test2@mail.com', description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFiles[0])
+            req.params.id = 1
+            req.user = { 'id': 0 }
+            await pdf.getPdfThumbnailById(req, res, next)
+            expect(res.download).toHaveBeenCalledTimes(1)
+        })
+    })
+
     describe('Queries the pdf by token', () => {
         it('The document is not found and the error is sent', async () => {
             const req = mockRequest()
@@ -93,8 +126,7 @@ describe('PDF Controller', () => {
             await db.Document.create(myFiles[0])
             await pdf.getPdfInfoByToken(req, res, next)
             expect(next).toHaveBeenCalledTimes(1)
-        })
-
+        }),
         it('The document not found', async () => {
             const req = mockRequest()
             const res = mockResponse()
@@ -122,6 +154,7 @@ describe('PDF Controller', () => {
             expect(call.id).toBe(4)
         })
     })
+
     describe('Delete the pdf by id', () => {
         it('The document is not found', async () => {
             const req = mockRequest()
@@ -145,7 +178,7 @@ describe('PDF Controller', () => {
             await db.Document.create(myFiles[0])
             await pdf.deletePdf(req, res, next)
             expect(next).toHaveBeenCalledTimes(1)
-        })
+        }),
         it('The document is not remove', async () => {
             const req = mockRequest()
             const res = mockResponse()
@@ -168,6 +201,222 @@ describe('PDF Controller', () => {
             await db.Document.create(myFiles[0])
             await pdf.deletePdf(req, res, next)
             expect(next).toHaveBeenCalledTimes(0)
+        })
+    })
+
+    describe('Get the PDF by id', () => {
+        it('The document is not found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.params = { id: 0 }
+            const next = jest.fn(emptyFunction)
+
+            const myFiles = [
+                {
+                    id: 12,
+                    name: 'File',
+                    originalName: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            ]
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            await db.Configuration.create({ id: 0, description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFiles[0])
+            await pdf.getPdfById(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('The document is  found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            const next = jest.fn(emptyFunction)
+
+            const myFiles = [
+                {
+                    id: 12,
+                    name: 'File',
+                    originalName: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            ]
+            req.params = { id: 12 }
+            req.user = { id: 0 }
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            await db.Configuration.create({ id: 0, description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFiles[0])
+            await pdf.getPdfById(req, res, next)
+            expect(res.download).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('Get the PDF by token', () => {
+        it('The document is not found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.signatory = { documentId: 0 }
+            const next = jest.fn(emptyFunction)
+
+            const myFiles = [
+                {
+                    id: 12,
+                    name: 'File',
+                    originalName: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            ]
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            await db.Configuration.create({ id: 0, description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFiles[0])
+            await pdf.getPdfByToken(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('Upload pdf', () => {
+        it('The document is not found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            const next = jest.fn(emptyFunction)
+            await pdf.uploadPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('No name given for the file', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.file = {}
+            const next = jest.fn(emptyFunction)
+            await pdf.uploadPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('No signatory found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.file = {}
+            req.body.name = {}
+            req.body.signatories = '{ }'
+            const next = jest.fn(emptyFunction)
+            await pdf.uploadPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('Configuration cannot be create', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.file = {}
+            req.body.name = {}
+            req.body.signatories = '[ { "id": 1, "email": "test1@mail.com" } , { "id": 3, "email":"test2@mail.com" } ]'
+            const next = jest.fn(emptyFunction)
+            await pdf.uploadPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('Document cannot be create', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.file = {}
+            req.body.name = {}
+            req.body.signatories = '[ { "id": 1, "email": "test1@mail.com" } , { "id": 3, "email":"test2@mail.com" } ]'
+            req.body.description = ''
+            req.body.showOtherSignatures = {}
+            req.body.configuration = '{}'
+            const next = jest.fn(emptyFunction)
+            await pdf.uploadPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('File cannot be save', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.file =
+                {
+                    id: 1,
+                    name: 'File',
+                    originalname: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            req.body.name = ' '
+            req.body.signatories = '[ { "id": 1, "email": "test1@mail.com" } , { "id": 3, "email":"test2@mail.com" } ]'
+            req.body.description = ''
+            req.body.showOtherSignatures = {}
+            req.body.configuration = {}
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            const next = jest.fn(emptyFunction)
+            await pdf.uploadPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('Sign the PDF', () => {
+        it('No data to sign', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            const next = jest.fn(emptyFunction)
+            await pdf.signPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('No data to sign', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.body.data = {}
+            req.signatory = { documentId: 1, save: jest.fn() }
+            const myFile =
+                {
+                    id: 1,
+                    name: 'File',
+                    originalName: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            await db.Configuration.create({ id: 0, description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFile)
+            const next = jest.fn(emptyFunction)
+            await pdf.signPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        })
+    })
+
+    describe('Get signed PDF', () => {
+        it('No document found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            const next = jest.fn(emptyFunction)
+            req.params.id = {}
+            await pdf.getSignedPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
+        it('No data to sign', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.body.data = {}
+            req.signatory = { documentId: 1, save: jest.fn() }
+            const myFile =
+                {
+                    id: 1,
+                    name: 'File',
+                    originalName: 'file.pdf',
+                    filename: 'file.pdf',
+                    ownerId: 0,
+                    configurationId: 0
+                }
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
+            await db.Configuration.create({ id: 0, description: 'A document', showOtherSignatures: false })
+            await db.Document.create(myFile)
+            await db.Signatory.create({ id: 0, email: 'test1@mail.com', signed: false, documentId: 1 })
+            const next = jest.fn(emptyFunction)
+            await pdf.getSignedPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
         })
     })
 })

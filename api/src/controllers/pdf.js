@@ -45,7 +45,7 @@ async function getPdfThumbnailById(req, res, next) {
         const thumbnailPath = await ensureThumbnail(pdf.filename)
         res.download(thumbnailPath, thumbnailPath.split('/').pop())
     } catch (err) {
-        next(err)
+        return next(err)
     }
 }
 
@@ -61,9 +61,8 @@ async function getPdfById(req, res, next) {
 
 async function getPdfByToken(req, res, next) {
     const pdf = await db.Document.findByPk(req.signatory.documentId)
-
     if (pdf === null) {
-        next(new Error('No document was found'))
+        return next(new Error('No document was found'))
     }
 
     res.download(filePath(pdf.filename), pdf.originalName)
@@ -141,7 +140,6 @@ async function uploadPdf(req, res, next) {
         await cleanup()
         return next(new Error(`Cannot create a new configuration from given data : ${err.message}`))
     }
-
     try {
         document = await db.Document.create({
             name: req.body.name,
@@ -182,7 +180,6 @@ async function uploadPdf(req, res, next) {
         await cleanup()
         return next(new Error(`Cannot send an email invitation to a signatory : ${err.message}`))
     }
-
     res.json({
         msg: 'success'
     })
@@ -212,9 +209,8 @@ async function deletePdf(req, res, next) {
 
 async function signPdf(req, res, next) {
     const data = req.body.data
-
     if (!data) {
-        return next(new Error('Singature data must be given to sign the document'))
+        return next(new Error('Signature data must be given to sign the document'))
     }
 
     const signatory = req.signatory
@@ -228,8 +224,11 @@ async function signPdf(req, res, next) {
     signatory.signed = true
     signatory.data = data
     await signatory.save()
-
-    await sendSignatureNotificationMail(signatory, document)
+    try {
+        await sendSignatureNotificationMail(signatory, document)
+    } catch (err) {
+        return next(err)
+    }
 
     res.json({ msg: 'ok' })
 }
