@@ -3,6 +3,8 @@ const db = require('../../src/models')
 const { mockResponse, mockRequest } = require('jest-mock-req-res')
 
 function emptyFunction(err) {
+    let a = err
+    err = a
 }
 
 describe('PDF Controller', () => {
