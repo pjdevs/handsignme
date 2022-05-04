@@ -1,9 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-const onlyAuth = { requiresAuth: true }
-const onlyNonAuth = { onlyNonAuth: true }
-
 const loggedNavbar = () => import('@/components/LoggedNavbar.vue')
 const loginNavbar = () => import('@/components/LoginNavbar.vue')
 
@@ -15,7 +12,7 @@ const routes = [
       default: () => import('@/views/LandingView.vue'),
       Navbar: loginNavbar
     },
-    meta: { requiresAuth: false, onlyNonAuth: false }
+    meta: { onlyNonAuth: true }
   },
   {
     path: '/home',
@@ -24,7 +21,7 @@ const routes = [
       default: () => import('@/views/HomeView.vue'),
       Navbar: loggedNavbar
     },
-    meta: onlyAuth
+    meta: { requiresAuth: true }
   },
   {
     path: '/sign/:token',
@@ -33,7 +30,7 @@ const routes = [
       default: () => import('@/views/SignView.vue'),
       Navbar: loginNavbar
     },
-    meta: onlyNonAuth
+    meta: { requiresAuth: false }
   },
   {
     path: '/sign/success',
@@ -42,7 +39,7 @@ const routes = [
       default: () => import('@/views/SignSuccessView.vue'),
       Navbar: loginNavbar
     },
-    meta: onlyNonAuth
+    meta: { requiresAuth: false }
   },
   {
     path: '/sign/error',
@@ -51,7 +48,7 @@ const routes = [
       default: () => import('@/views/SignErrorView.vue'),
       Navbar: loginNavbar
     },
-    meta: onlyNonAuth
+    meta: { requiresAuth: false }
   },
   {
     path: '/upload',
@@ -60,7 +57,7 @@ const routes = [
       default: () => import('@/views/UploadView.vue'),
       Navbar: loggedNavbar
     },
-    meta: onlyAuth
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
@@ -69,7 +66,7 @@ const routes = [
       default: () => import('@/views/LoginView.vue'),
       Navbar: loginNavbar
     },
-    meta: onlyNonAuth
+    meta: { onlyNonAuth: true }
   },
   {
     path: '/signup',
@@ -78,7 +75,7 @@ const routes = [
       default: () => import('@/views/SignupView.vue'),
       Navbar: loginNavbar
     },
-    meta: onlyNonAuth
+    meta: { onlyNonAuth: true }
   },
   {
     path: '/admin',
@@ -87,7 +84,7 @@ const routes = [
       default: () => import('@/views/AdminView.vue'),
       Navbar: loggedNavbar
     },
-    meta: onlyNonAuth
+    meta: { requiresAuth: true }
   }
 ]
 
@@ -97,7 +94,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-  if (to.meta.requiresAuth || to.meta.onlyAuth) {
+  if (to.meta.requiresAuth || to.meta.onlyNonAuth) {
     const auth = useAuthStore()
     const isAuth = await auth.verify()
 
@@ -107,7 +104,7 @@ router.beforeEach(async (to, from) => {
         query: { redirect: to.fullPath }
       }
     } else if (to.meta.onlyNonAuth && isAuth) {
-      return from
+      return '/home'
     }
   }
 })

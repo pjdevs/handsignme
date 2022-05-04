@@ -37,12 +37,7 @@ export default {
       currentScale: Number(this.scale),
       loading: false,
       numPages: 0,
-      configData: [
-        {
-          page: 1,
-          signature: []
-        }
-      ]
+      configData: []
     }
   },
   props: {
@@ -75,36 +70,7 @@ export default {
     config: {
       type: Array,
       default: () => {
-        return [
-          {
-            email: 'foo@bar.com',
-            signature: {
-              rect: {
-                x: 0.65,
-                y: 0.85,
-                width: 0.3,
-                height: 0.1,
-                color: 'purple'
-              },
-              color: 'black'
-            },
-            page: 1
-          },
-          {
-            email: 'foo@bar.com',
-            signature: {
-              rect: {
-                x: 0.25,
-                y: 0.85,
-                width: 0.3,
-                height: 0.1,
-                color: 'red'
-              },
-              color: 'black'
-            },
-            page: 1
-          }
-        ]
+        return []
       }
     }
   },
@@ -139,35 +105,39 @@ export default {
       ctx.lineWidth = 5 * this.currentScale
       ctx.stroke()
 
-      ctx.beginPath()
       for (const signature of this.configData) {
         if (signature.page === this.index) {
+          ctx.beginPath()
+
           for (const line of signature.signature) {
             ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
             ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
           }
+
+          ctx.closePath()
+          ctx.strokeStyle = 'black'
+          ctx.lineWidth = 3 * this.currentScale
+          ctx.stroke()
         }
       }
-      ctx.closePath()
 
       if (this.showOtherSignatures) {
-        ctx.beginPath()
         for (const signatory of this.otherSignatories) {
           for (const signature of signatory.data) {
             if (signature.page === this.index) {
+              ctx.beginPath()
               for (const line of signature.signature) {
                 ctx.moveTo(line.from.x * docWidth, line.from.y * docHeight)
                 ctx.lineTo(line.to.x * docWidth, line.to.y * docHeight)
               }
+              ctx.closePath()
+              ctx.strokeStyle = 'black'
+              ctx.lineWidth = 3 * this.currentScale
+              ctx.stroke()
             }
           }
         }
-        ctx.closePath()
       }
-
-      ctx.strokeStyle = configObject.signature.color
-      ctx.lineWidth = 3 * this.currentScale
-      ctx.stroke()
     },
     setupConfig (ctx, docWidth, docHeight) {
       for (const configObject of this.config) {
@@ -279,16 +249,20 @@ export default {
             ctx.lineWidth = 3 * vm.currentScale
             ctx.stroke()
 
-            vm.configData[0].signature.push({
-              from: {
-                x: lastPosition.x / docWidth,
-                y: lastPosition.y / docHeight
-              },
-              to: {
-                x: position.x / docWidth,
-                y: position.y / docHeight
-              }
-            })
+            vm.configData
+              .filter(c => c.page === vm.index)
+              .forEach(c => {
+                c.signature.push({
+                  from: {
+                    x: lastPosition.x / docWidth,
+                    y: lastPosition.y / docHeight
+                  },
+                  to: {
+                    x: position.x / docWidth,
+                    y: position.y / docHeight
+                  }
+                })
+              })
 
             lastPosition.x = position.x
             lastPosition.y = position.y
@@ -364,12 +338,24 @@ export default {
         .then(doc => {
           vm.doc = doc
           vm.numPages = doc.numPages
+
+          vm.configData = []
+          for (let i = 1; i <= vm.numPages; i++) {
+            vm.configData.push({
+              page: i,
+              signature: []
+            })
+          }
+
           return vm.render()
         })
         .then(() => {
           vm.loading = false
         })
-        .catch(console.log)
+        .catch(err => {
+          console.log(err)
+          vm.$router.push('/sign/error')
+        })
     }
   },
   mounted () {

@@ -34,6 +34,7 @@
         <div class="col-12">
           <label for="Configuration">Configuration</label>
           <textarea name="configuration" id="configuration" ref="configuration" class="form-control" placeholder=""></textarea>
+          <button class="btn btn-outline-secondary my-2" @click="updateConfig">Update configuration</button>
         </div>
       </div>
       <div class="row mb-4">
@@ -64,7 +65,7 @@
       </div>
     </form>
     <div class="col">
-      <PDFViewer v-if="file != null" :src="file">
+      <PDFViewer v-if="file != null" :config="config" :src="file">
       </PDFViewer>
     </div>
   </div>
@@ -83,7 +84,8 @@ export default {
       ],
       submiting: false,
       err: undefined,
-      file: null
+      file: null,
+      config: []
     }
   },
   watch: {
@@ -113,6 +115,14 @@ export default {
     },
     loadFile (event) {
       this.file = URL.createObjectURL(this.$refs.file.files[0])
+    },
+    updateConfig () {
+      console.log('bite')
+      try {
+        this.config = JSON.parse(this.$refs.configuration.value)
+      } catch (err) {
+        console.log(err)
+      }
     }
   },
   mounted () {

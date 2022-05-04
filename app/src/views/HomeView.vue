@@ -43,7 +43,6 @@ export default {
     http.get('/api/pdf/list')
       .then(pdfList => {
         vm.pdfList = pdfList.data
-        console.log(pdfList.data)
       })
       .catch(alert)
   }
