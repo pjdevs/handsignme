@@ -1,8 +1,15 @@
 const hash = require('../../src/utils/hash')
 
 describe('Hash Functions', () => {
+    describe('Hash FIle', () => {
+        it('Catch error', () => {
+            const rest = hash.hashFile('test.pdf')
+            expect(rest).toBe('')
+        })
+    })
+
     describe('Hash Token', () => {
-        it('It give a valid hash token', () => {
+        it('It gives a valid hash token', () => {
             const user = { id: 1, email: 'test@mail.com' }
             const signatory = { id: 3, email: 'test2@mail.com' }
             const document = { id: 2 }
