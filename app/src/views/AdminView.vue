@@ -17,10 +17,11 @@
               <a class="nav-link active" href="#" @click="showDocList()">Documents</a>
             </li>
           </ul>
-          <form class="d-flex" method="POST" action="/" novalidate>
-            <input class="form-control me-2" type="search" placeholder="Search" name="search" aria-label="Search">
-            <button class="btn btn-outline-light" type="submit">Search</button>
-          </form>
+          <div class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" v-model="searchTerm" aria-label="Search">
+            <a v-if="mode == 'userList'" href="#" type="button" class="btn btn-outline-light" @click="findUser(searchTerm)">Search</a>
+            <a v-if="mode == 'docList'" href="#" type="button" class="btn btn-outline-light" @click="findFile(searchTerm)">Search</a>
+          </div>
         </div>
       </div>
     </nav>
@@ -79,7 +80,8 @@ export default {
       docs: [],
       deletionDone: undefined,
       deletionMessage: undefined,
-      mode: 'userList'
+      mode: 'userList',
+      searchTerm: undefined
     }
   },
   methods: {
@@ -87,11 +89,35 @@ export default {
       this.mode = 'userList'
       this.deletionDone = undefined
       this.deletionMessage = undefined
+      http.get('/api/admin/user/all')
+        .then((res) => {
+          this.users = res.data
+        })
+        .catch(error => console.error(`There was an error retrieving the user list: ${error}`))
     },
     showDocList: function () {
       this.mode = 'docList'
       this.deletionDone = undefined
       this.deletionMessage = undefined
+      http.get('/api/admin/file/all')
+        .then((res) => {
+          this.docs = res.data
+        })
+        .catch(error => console.error(`There was an error retrieving the pdf list: ${error}`))
+    },
+    findUser: function (email) {
+      http.get(`/api/admin/user/find/${email}`)
+        .then((res) => {
+          this.users = res.data
+        })
+        .catch(error => console.error(`There was an error finding the user: ${error}`))
+    },
+    findFile: function (name) {
+      http.get(`/api/admin/file/find/${name}`)
+        .then((res) => {
+          this.docs = res.data
+        })
+        .catch(error => console.error(`There was an error finding the file: ${error}`))
     },
     deleteUser: function (user, index) {
       http.delete(`/api/admin/user/delete/${user.id}`)

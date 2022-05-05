@@ -1,3 +1,4 @@
+const { Sequelize } = require('../models')
 const db = require('../models')
 const { removeFile } = require('../utils/file-storage')
 
@@ -15,6 +16,28 @@ async function getDocList(req, res) {
     })
 
     res.json(docList.map(doc => doc.dataValues))
+}
+
+async function findUser(req, res) {
+    const user = await db.User.findAll({
+        attributes: ['id', 'email'],
+        where: {
+            email: {[Sequelize.Op.like]: `%${req.params.email}%`}
+        }
+    })
+
+    res.json(user.map(u => u.dataValues))
+}
+
+async function findFile(req, res) {
+    const file = await db.Document.findAll({
+        attributes: ['id', 'name', 'ownerId'],
+        where: {
+            name: {[Sequelize.Op.like]: `%${req.params.name}%`}
+        }
+    })
+
+    res.json(file.map(f => f.dataValues))
 }
 
 async function deleteFile(req, res, next) {
@@ -91,6 +114,8 @@ async function deleteUser(req, res, next) {
 module.exports = {
     getUserList,
     getDocList,
+    findUser,
+    findFile,
     deleteFile,
     deleteUser
 }
