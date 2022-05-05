@@ -22,7 +22,7 @@ async function findUser(req, res) {
     const user = await db.User.findAll({
         attributes: ['id', 'email'],
         where: {
-            email: {[Sequelize.Op.like]: `%${req.params.email}%`}
+            email: { [Sequelize.Op.like]: `%${req.params.email}%` }
         }
     })
 
@@ -33,7 +33,7 @@ async function findFile(req, res) {
     const file = await db.Document.findAll({
         attributes: ['id', 'name', 'ownerId'],
         where: {
-            name: {[Sequelize.Op.like]: `%${req.params.name}%`}
+            name: { [Sequelize.Op.like]: `%${req.params.name}%` }
         }
     })
 
