@@ -302,6 +302,7 @@ describe('PDF Controller', () => {
             req.file = {}
             req.body.name = {}
             req.body.signatories = '{ }'
+            req.user = { id: 0 }
             const next = jest.fn(emptyFunction)
             await pdf.uploadPdf(req, res, next)
             expect(next).toHaveBeenCalledTimes(1)
@@ -312,6 +313,9 @@ describe('PDF Controller', () => {
             req.file = {}
             req.body.name = {}
             req.body.signatories = '[ { "id": 1, "email": "test1@mail.com" } , { "id": 3, "email":"test2@mail.com" } ]'
+            req.user = { id: 0 }
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
             const next = jest.fn(emptyFunction)
             await pdf.uploadPdf(req, res, next)
             expect(next).toHaveBeenCalledTimes(1)
@@ -325,6 +329,9 @@ describe('PDF Controller', () => {
             req.body.description = ''
             req.body.showOtherSignatures = {}
             req.body.configuration = '{}'
+            req.user = { id: 0 }
+            await db.sequelize.sync({ force: true })
+            await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
             const next = jest.fn(emptyFunction)
             await pdf.uploadPdf(req, res, next)
             expect(next).toHaveBeenCalledTimes(1)
@@ -346,6 +353,7 @@ describe('PDF Controller', () => {
             req.body.description = ''
             req.body.showOtherSignatures = {}
             req.body.configuration = {}
+            req.user = { id: 0 }
             await db.sequelize.sync({ force: true })
             await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
             const next = jest.fn(emptyFunction)

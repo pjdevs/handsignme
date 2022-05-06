@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt')
 const db = require('../models')
 
-module.exports.signup = (req, res, next) => {
+module.exports.signup = async (req, res, next) => {
     const email = req.body.email
     const password = req.body.password
     const password2 = req.body.password2
@@ -22,12 +22,12 @@ module.exports.signup = (req, res, next) => {
             password: hashedPassword
         }
 
-        db.User.create(newUser)
-            .then(() => {
-                res.json({ msg: 'success' })
-            }).catch(function (error) {
-                next(error)
-            })
+        try {
+            await db.User.create(newUser)
+            res.json({ msg: 'success' })
+        } catch(error) {
+            next(error)
+        }
     }
 }
 

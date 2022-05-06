@@ -1,12 +1,14 @@
 const db = require('../models')
 
-function validateEmail(req, res, next) {
-    const signatory = db.Signatory.findOne({
+async function validateEmail(req, res, next) {
+    const signatory = await db.Signatory.findOne({
         where: {
             email: req.body.email
         }
     })
-
+    if (!signatory) {
+        return next(new Error ('No email found'))
+    }
     if (signatory.id === req.signatory.id) {
         res.send({ msg: 'ok' })
     } else {

@@ -34,8 +34,8 @@ describe('Auth Controller', () => {
             req.body.password = 'test'
             req.body.password2 = 'test'
             await db.sequelize.sync({ force: true })
-            auth.signup(req, res, next)
-            expect(next).toHaveBeenCalledTimes(0)
+            await auth.signup(req, res, next)
+            expect(res.json).toHaveBeenCalledWith({ msg: 'success' })
         })
     })
 
