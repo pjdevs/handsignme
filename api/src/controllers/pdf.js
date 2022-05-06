@@ -112,7 +112,7 @@ async function uploadPdf(req, res, next) {
         return next(new Error('No name given for the file'))
     }
 
-    const owner = await db.User.findByPk(0)
+    const owner = await db.User.findByPk(req.user.id)
     const signatoriesData = JSON.parse(req.body.signatories)
     let configuration = undefined
     let document = undefined
