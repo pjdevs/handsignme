@@ -117,7 +117,6 @@ export default {
       this.file = URL.createObjectURL(this.$refs.file.files[0])
     },
     updateConfig () {
-      console.log('bite')
       try {
         this.config = JSON.parse(this.$refs.configuration.value)
       } catch (err) {

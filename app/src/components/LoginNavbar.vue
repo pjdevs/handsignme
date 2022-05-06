@@ -60,7 +60,6 @@ export default {
     padding: 10px 0; }
 
 .navbar {
-  padding: 0;
   border-radius: 5px;
   position: relative;
   -webkit-transition: all 0.3s ease-out 0s;
