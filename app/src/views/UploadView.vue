@@ -34,7 +34,7 @@
         <div class="col-12">
           <label for="Configuration">Configuration</label>
           <textarea name="configuration" id="configuration" ref="configuration" class="form-control" placeholder=""></textarea>
-          <button class="btn btn-outline-secondary my-2" @click="updateConfig">Update configuration</button>
+          <button class="btn btn-outline-secondary my-2" @click.prevent="updateConfig">Update configuration</button>
         </div>
       </div>
       <div class="row mb-4">
@@ -65,7 +65,7 @@
       </div>
     </form>
     <div class="col">
-      <PDFViewer v-if="file != null" :config="config" :src="file">
+      <PDFViewer ref="viewer" v-if="file != null" :config="config" :src="file">
       </PDFViewer>
     </div>
   </div>
@@ -74,6 +74,7 @@
 <script>
 import http from '@/http-common'
 import PDFViewer from '../components/PDFViewer.vue'
+import { validateConfiguration } from '../../../api/src/utils/config'
 
 export default {
   components: { PDFViewer },
@@ -118,9 +119,11 @@ export default {
     },
     updateConfig () {
       try {
+        validateConfiguration(this.$refs.configuration.value)
         this.config = JSON.parse(this.$refs.configuration.value)
+        this.$refs.viewer.render()
       } catch (err) {
-        console.log(err)
+        this.err = err
       }
     }
   },
