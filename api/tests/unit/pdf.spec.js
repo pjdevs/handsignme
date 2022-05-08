@@ -296,12 +296,24 @@ describe('PDF Controller', () => {
             await pdf.uploadPdf(req, res, next)
             expect(next).toHaveBeenCalledTimes(1)
         }),
+        it('No configuration found', async () => {
+            const req = mockRequest()
+            const res = mockResponse()
+            req.file = {}
+            req.body.name = {}
+            req.body.signatories = '{ }'
+            req.user = { id: 0 }
+            const next = jest.fn(emptyFunction)
+            await pdf.uploadPdf(req, res, next)
+            expect(next).toHaveBeenCalledTimes(1)
+        }),
         it('No signatory found', async () => {
             const req = mockRequest()
             const res = mockResponse()
             req.file = {}
             req.body.name = {}
             req.body.signatories = '{ }'
+            req.body.configuration = '{}'
             req.user = { id: 0 }
             const next = jest.fn(emptyFunction)
             await pdf.uploadPdf(req, res, next)
@@ -313,6 +325,7 @@ describe('PDF Controller', () => {
             req.file = {}
             req.body.name = {}
             req.body.signatories = '[ { "id": 1, "email": "test1@mail.com" } , { "id": 3, "email":"test2@mail.com" } ]'
+            req.body.configuration = '{}'
             req.user = { id: 0 }
             await db.sequelize.sync({ force: true })
             await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
@@ -328,7 +341,7 @@ describe('PDF Controller', () => {
             req.body.signatories = '[ { "id": 1, "email": "test1@mail.com" } , { "id": 3, "email":"test2@mail.com" } ]'
             req.body.description = ''
             req.body.showOtherSignatures = {}
-            req.body.configuration = '{}'
+            req.body.configuration = '[{"email":"foo1@bar.com","signature":{"rect":{"x":0.65,"y":0.85,"width":0.3,"height":0.1,"color":"purple"},"color":"black"},"page":1}]'
             req.user = { id: 0 }
             await db.sequelize.sync({ force: true })
             await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })
@@ -352,7 +365,7 @@ describe('PDF Controller', () => {
             req.body.signatories = '[ { "id": 1, "email": "test1@mail.com" } , { "id": 3, "email":"test2@mail.com" } ]'
             req.body.description = ''
             req.body.showOtherSignatures = {}
-            req.body.configuration = {}
+            req.body.configuration = '[{"email":"foo1@bar.com","signature":{"rect":{"x":0.65,"y":0.85,"width":0.3,"height":0.1,"color":"purple"},"color":"black"},"page":1}]'
             req.user = { id: 0 }
             await db.sequelize.sync({ force: true })
             await db.User.create({ id: 0, email: 'test@mail.com', password: '', salt: '' })

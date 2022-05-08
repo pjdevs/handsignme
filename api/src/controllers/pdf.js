@@ -3,6 +3,7 @@ const { filePath, saveFile, removeFile } = require('../utils/file-storage')
 const { hashFile } = require('../utils/hash')
 const { sendInvitationMail, sendSignatureNotificationMail } = require('../utils/mail')
 const { ensureThumbnail } = require('../utils/thumbnail')
+const { validateConfiguration } = require('../utils/config')
 const { PDFDocument, rgb } = require('pdf-lib')
 const fs = require('fs')
 const { Op } = require('sequelize')
@@ -112,6 +113,10 @@ async function uploadPdf(req, res, next) {
         return next(new Error('No name given for the file'))
     }
 
+    if (!req.body.configuration) {
+        return next(new Error('No configuration given for the file'))
+    }
+
     const owner = await db.User.findByPk(req.user.id)
     const signatoriesData = JSON.parse(req.body.signatories)
     let configuration = undefined
@@ -129,8 +134,9 @@ async function uploadPdf(req, res, next) {
         await document?.destroy()
         await configuration?.destroy()
     }
-
     try {
+        validateConfiguration(JSON.parse(req.body.configuration))
+
         configuration = await db.Configuration.create({
             description: req.body.description,
             showOtherSignatures: req.body.showOtherSignatures,
