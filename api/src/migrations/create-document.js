@@ -22,7 +22,7 @@ module.exports = {
             hash: {
                 type: Sequelize.STRING(32),
                 allowNull: true,
-                unique: true
+                unique: false
             },
             configurationId: {
                 type: Sequelize.INTEGER,

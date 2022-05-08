@@ -18,7 +18,8 @@ module.exports = (sequelize) => {
             allowNull: false
         },
         hash: {
-            type: DataTypes.STRING(32)
+            type: DataTypes.STRING(32),
+            unique: true
         },
         configurationId: {
             type: DataTypes.INTEGER,
