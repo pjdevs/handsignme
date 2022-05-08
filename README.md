@@ -73,6 +73,8 @@ $ npx sequelize db:migrate
 $ npx sequelize db:seed:all
 ```
 
+4. To have access to the thumnails you have to edit the file : ``` etc/ImageMagick-7/policy.xml ``` (it can be ImageMagick-6, it depends of the version of the software) and add before ```</policymap> ``` the line ```  <policy domain="coder" rights="read | write" pattern="PDF" />```
+
 ### Tests
 
 To run the unit tests of the API :
