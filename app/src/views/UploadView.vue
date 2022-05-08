@@ -119,7 +119,7 @@ export default {
     },
     updateConfig () {
       try {
-        validateConfiguration(this.$refs.configuration.value)
+        validateConfiguration(JSON.parse(this.$refs.configuration.value))
         this.config = JSON.parse(this.$refs.configuration.value)
         this.$refs.viewer.render()
       } catch (err) {
