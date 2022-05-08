@@ -122,6 +122,7 @@ export default {
         validateConfiguration(JSON.parse(this.$refs.configuration.value))
         this.config = JSON.parse(this.$refs.configuration.value)
         this.$refs.viewer.render()
+        this.err = undefined
       } catch (err) {
         this.err = err
       }
