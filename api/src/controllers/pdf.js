@@ -100,6 +100,7 @@ async function getPdfInfoByToken(req, res, next) {
     const data = pdf.toJSON()
     data.signatory = req.signatory
     data.otherSignatories = otherSignatories
+    data.configuration.data = JSON.parse(JSON.parse(data.configuration.data))
 
     res.json(data)
 }
