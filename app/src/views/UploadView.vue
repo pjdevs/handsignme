@@ -128,7 +128,7 @@ export default {
     }
   },
   mounted () {
-    this.$refs.configuration.value = '[{"email":"mail@mail.com","signature":{"rect":{"x":0.65,"y":0.85,"width":0.3,"height":0.1,"color":"purple"},"color":"black"},"page":1}}]'
+    this.$refs.configuration.value = '[{"email":"mail@mail.com","signature":{"rect":{"x":0.65,"y":0.85,"width":0.3,"height":0.1,"color":"purple"},"color":"black"},"page":1}]'
     this.checkValidSignatories(null)
 
     this.$refs.upload.addEventListener('submit', (e) => {
